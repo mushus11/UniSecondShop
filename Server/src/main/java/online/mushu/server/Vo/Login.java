@@ -1,7 +1,7 @@
 package online.mushu.server.Vo;
 
 
-import com.example.wx.Common.Util.JSONUtils;
+import online.mushu.server.Common.Util.JSONUtils;
 
 /**
     =======

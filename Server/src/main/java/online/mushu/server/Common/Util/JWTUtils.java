@@ -30,8 +30,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class JWTUtils {
 
-    @Value("${jwt.sign}")
-    String sign;
+//    @Value("${jwt.sign}")
+    String sign = "123456";
 
     @Resource
     StringRedisTemplate stringRedisTemplate;

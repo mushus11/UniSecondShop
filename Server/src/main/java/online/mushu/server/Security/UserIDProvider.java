@@ -25,7 +25,7 @@ public class UserIDProvider implements AuthenticationProvider {
         UserIdDetail detail;
 
         try {
-            detail = (UserIdDetail) userService.loadUserById(token.getPrincipal());
+            detail = (UserIdDetail) userService.loadUserById((Integer) token.getPrincipal());
         } catch (UsernameNotFoundException e) {
             throw new BadCredentialsException("Invalid username");
         }

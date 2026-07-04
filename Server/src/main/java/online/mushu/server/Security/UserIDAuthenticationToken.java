@@ -2,6 +2,7 @@ package online.mushu.server.Security;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -16,7 +17,6 @@ public class UserIDAuthenticationToken extends AbstractAuthenticationToken {
     @Serial
     private static final long serialVersionUID = 225L;
     @Setter
-    @Getter
     private int principal;
     @Setter
     @Getter
@@ -51,4 +51,8 @@ public class UserIDAuthenticationToken extends AbstractAuthenticationToken {
     }
 
 
+    @Override
+    public @Nullable Object getPrincipal() {
+        return this.principal;
+    }
 }

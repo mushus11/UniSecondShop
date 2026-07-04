@@ -29,7 +29,7 @@ public class UserProfile {
     private String grade;
     @Column(name = "telephone", columnDefinition = "CHAR(11) NOT NULL")
     private String telephone;
-    @Column(name = "profile", columnDefinition = "TEXT DEFAULT ' '")
+    @Column(name = "profile", columnDefinition = "TEXT")
     private String profile;
     @Column(name = "certified", columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
     private boolean certified;
