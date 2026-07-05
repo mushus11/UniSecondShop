@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
+
     public UserProfileService(UserProfileRepository userProfileRepository) {
         this.userProfileRepository = userProfileRepository;
     }

@@ -2,13 +2,16 @@ package online.mushu.server.Controller;
 
 
 import jakarta.annotation.Resource;
+import online.mushu.server.Dto.ChangePasswordDto;
 import online.mushu.server.Dto.RegisterDto;
 import online.mushu.server.Dto.ReviseDto;
+import online.mushu.server.Dto.UserInfDto;
 import online.mushu.server.Entity.UserProfile;
 import online.mushu.server.Service.UserProfileService;
 import online.mushu.server.Service.UserService;
 import online.mushu.server.Vo.RegisterVo;
 import online.mushu.server.Vo.ReviseVo;
+import online.mushu.server.Vo.UserInfVo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -93,6 +96,35 @@ public class User {
 
         return path;
 
+    }
+
+    @PostMapping("/changePassword")
+    public String changePassword(@RequestBody ChangePasswordDto dto) {
+        int id = dto.getId();
+        String newPassword = dto.getNewPassword();
+
+        online.mushu.server.Entity.User user = userService.getUserById(id);
+        if (user == null) {
+            return "未找到用户";
+        }
+        user.setPassword(newPassword);
+        userService.save(user);
+        return "修改成功";
+    }
+
+    @GetMapping("/getUserInf")
+    public UserInfVo getUserInf(@RequestBody UserInfDto dto) {
+        int id = dto.getId();
+        UserProfile userProfile = userProfileService.getUserProfile(id);
+        return UserInfVo.builder()
+                .id(userProfile.getID())
+                .telephone(userProfile.getTelephone())
+                .profile(userProfile.getProfile())
+                .certified(userProfile.isCertified())
+                .college(userProfile.getCollege())
+                .grade(userProfile.getGrade())
+                .image(userProfile.getImage())
+                .build();
     }
 
 }

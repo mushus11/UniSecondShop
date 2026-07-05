@@ -1,11 +1,11 @@
 package online.mushu.server.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * =======DAO类
@@ -20,14 +20,43 @@ public class User {
 
     @Id
     @Column(name = "ID")
-    private int ID;
+    private int id;
     @Column(name = "username")
     private String username;
     @Column(name = "password")
     private String password;
 
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Goods> goodsList = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<PurchaseInf> purchaseInfList = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "buyer",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<TransactionRecords> buyer = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "seller",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<TransactionRecords> seller = new ArrayList<>();
+
+
     public User(int id,String username , String password) {
-        setID(id);
+        setId(id);
         setUsername(username);
         setPassword(password);
     }
