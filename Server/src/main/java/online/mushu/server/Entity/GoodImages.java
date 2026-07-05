@@ -18,7 +18,7 @@ public class GoodImages {
 
     @Id
     @Column(name = "ID", columnDefinition = "CHAR(36)")
-    private String ID;
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -40,6 +40,6 @@ public class GoodImages {
     private String text;
 
     @Lob
-    @Column(name = "image")
+    @Column(name = "image", columnDefinition = "MEDIUMBLOB")
     private byte[] image;
 }

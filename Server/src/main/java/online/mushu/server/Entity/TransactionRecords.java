@@ -20,7 +20,7 @@ public class TransactionRecords {
 
     @Id
     @Column(name = "ID", columnDefinition = "CHAR(36)")
-    private String ID;
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -30,8 +30,7 @@ public class TransactionRecords {
             foreignKey = @ForeignKey(
                     name = "fk_transaction_records_user_buyers",
                     value = ConstraintMode.PROVIDER_DEFAULT,
-                    foreignKeyDefinition = "FOREIGN KEY (buyerID) REFERENCES User(ID) " +
-                            "ON DELETE CASCADE"
+                    foreignKeyDefinition = "FOREIGN KEY (buyerID) REFERENCES User(ID) "
             )
     )
     private User buyer;
@@ -43,8 +42,7 @@ public class TransactionRecords {
             foreignKey = @ForeignKey(
                     name = "fk_transaction_records_user_seller",
                     value = ConstraintMode.PROVIDER_DEFAULT,
-                    foreignKeyDefinition = "FOREIGN KEY (sellerID) REFERENCES User(ID) " +
-                            "ON DELETE CASCADE"
+                    foreignKeyDefinition = "FOREIGN KEY (sellerID) REFERENCES User(ID) "
             )
     )
     private User seller;
@@ -56,11 +54,10 @@ public class TransactionRecords {
             foreignKey = @ForeignKey(
                     name = "fk_transaction_records_goods",
                     value = ConstraintMode.PROVIDER_DEFAULT,
-                    foreignKeyDefinition = "FOREIGN KEY (goodID) REFERENCES Goods(ID) " +
-                            "ON DELETE CASCADE"
+                    foreignKeyDefinition = "FOREIGN KEY (goodID) REFERENCES Goods(ID) "
             )
     )
-    private Goods good;
+    private Goods goods;
 
     @Column(name = "transactionTime")
     private Timestamp transactionTime;

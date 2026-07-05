@@ -15,7 +15,4 @@ public interface ReleaseInfRepository extends JpaRepository<ReleaseInf, String> 
 
     List<ReleaseInf> findByTopMarkTrue();
 
-    ReleaseInf findByID(String id);
-
-    ReleaseInf updateByID(String id, ReleaseInf entity);
 }

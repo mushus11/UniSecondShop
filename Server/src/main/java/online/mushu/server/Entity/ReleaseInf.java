@@ -20,7 +20,7 @@ public class ReleaseInf {
 
     @Id
     @Column(name = "ID", columnDefinition = "CHAR(36)")
-    private String ID;
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -29,21 +29,20 @@ public class ReleaseInf {
             foreignKey = @ForeignKey(
                     name = "fk_release_inf_good",
                     value = ConstraintMode.PROVIDER_DEFAULT,
-                    foreignKeyDefinition = "FOREIGN KEY (goodID) REFERENCES Goods(ID) " +
-                            "ON DELETE CASCADE"
+                    foreignKeyDefinition = "FOREIGN KEY (goodID) REFERENCES Goods(ID) "
             )
     )
     private Goods goods;
 
     @Column(name = "upLoadTime")
     private Timestamp upLoadTime;
-    @Column(name = "downLoatTime")
+    @Column(name = "downLoadTime")
     private Timestamp downLoadTime;
     @Column(name = "state")
     private int state;
 
     @Column(name = "hurryMark", columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
-    private boolean HurryMark;
+    private boolean hurryMark;
     @Column(name = "topMark", columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
     private boolean topMark;
 }

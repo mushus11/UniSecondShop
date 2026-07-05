@@ -33,7 +33,7 @@ public class UserService implements UserDetailsService {
         }
 
         return UserIdDetail.builder()
-                .id(user.getID())
+                .id(user.getId())
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .authorities(null)
@@ -48,7 +48,7 @@ public class UserService implements UserDetailsService {
         }
 
         return UserIdDetail.builder()
-                .id(user.getID())
+                .id(user.getId())
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .authorities(null)
@@ -64,6 +64,6 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUserById(int id) {
-        return userRepository.findByID(id);
+        return userRepository.findById(id);
     }
 }

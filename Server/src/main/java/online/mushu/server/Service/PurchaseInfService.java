@@ -25,11 +25,11 @@ public class PurchaseInfService {
     }
 
     public PurchaseInf getPurchaseById(String id) {
-        return repository.findByID(id);
+        return repository.findById(id).orElse(null);
     }
 
     public void updatePurchase(PurchaseInf purchaseInf) {
-        repository.updateByID(purchaseInf.getID(), purchaseInf);
+        repository.save(purchaseInf);
     }
 
     public List<PurchaseInf> getByType(int type) {
@@ -41,6 +41,6 @@ public class PurchaseInfService {
     }
 
     public void deletePurchase(String id) {
-        repository.deleteByID(id);
+        repository.deleteById(id);
     }
 }

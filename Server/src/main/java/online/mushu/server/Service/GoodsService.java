@@ -21,9 +21,7 @@ public class GoodsService {
     }
 
     public List<Goods> getGoods(int id) {
-        List<Goods> goodsList = new ArrayList<Goods>();
-        goodsList = goodsRepository.findByUserID(id);
-        return goodsList;
+        return goodsRepository.findByUserID(id);
     }
 
     public void saveAll(List<Goods> goodsList) {
@@ -35,7 +33,7 @@ public class GoodsService {
     }
 
     public Goods getGoodsByID(String id) {
-        return goodsRepository.findByID(id);
+        return goodsRepository.findById(id).orElse(null);
     }
 
     public List<Goods> getGoodsByType(int type) {
@@ -43,11 +41,11 @@ public class GoodsService {
     }
 
     public void updateGood(Goods good) {
-        String id = good.getID();
-        goodsRepository.updateByID(id, good);
+        String id = good.getId();
+        goodsRepository.save(good);
     }
 
     public void deleteGood(String id) {
-        goodsRepository.deleteByID(id);
+        goodsRepository.deleteById(id);
     }
 }

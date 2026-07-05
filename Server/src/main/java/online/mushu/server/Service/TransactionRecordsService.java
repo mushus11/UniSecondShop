@@ -23,11 +23,11 @@ public class TransactionRecordsService {
     }
 
     public TransactionRecords getRecord(String id) {
-        return transactionRecordsRepository.findByID(id);
+        return transactionRecordsRepository.findById(id).orElse(null);
     }
 
     public void updateRecord(String id, TransactionRecords transactionRecords) {
-        transactionRecordsRepository.updateByID(id, transactionRecords);
+        transactionRecordsRepository.save(transactionRecords);
     }
 
     public List<TransactionRecords> getRecordsByUserID(int id) {
@@ -35,6 +35,6 @@ public class TransactionRecordsService {
     }
 
     public void delete(String id) {
-        transactionRecordsRepository.deleteByID(id);
+        transactionRecordsRepository.deleteById(id);
     }
 }

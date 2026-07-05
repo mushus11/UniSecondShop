@@ -62,8 +62,8 @@ public class GoodsController {
         String id = dto.getGoodID();
         Goods good = goodsService.getGoodsByID(id);
         return GetGoodsInfVo.builder()
-                .id(good.getID())
-                .userId(good.getUser().getID())
+                .id(good.getId())
+                .userId(good.getUser().getId())
                 .name(good.getName())
                 .price(good.getPrice())
                 .text(good.getText())
@@ -81,8 +81,8 @@ public class GoodsController {
         List<Goods> goods = goodsService.getGoods(id);
         for (Goods good : goods) {
             GetGoodsInfVo getGoodsInfVo = GetGoodsInfVo.builder()
-                    .id(good.getID())
-                    .userId(good.getUser().getID())
+                    .id(good.getId())
+                    .userId(good.getUser().getId())
                     .name(good.getName())
                     .price(good.getPrice())
                     .text(good.getText())
@@ -101,8 +101,8 @@ public class GoodsController {
         List<Goods> goods = goodsService.getGoods(type);
         for (Goods good : goods) {
             GetGoodsInfVo vo = GetGoodsInfVo.builder()
-                    .id(good.getID())
-                    .userId(good.getUser().getID())
+                    .id(good.getId())
+                    .userId(good.getUser().getId())
                     .name(good.getName())
                     .price(good.getPrice())
                     .text(good.getText())

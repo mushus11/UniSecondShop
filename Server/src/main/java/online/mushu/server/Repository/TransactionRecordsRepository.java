@@ -1,7 +1,10 @@
 package online.mushu.server.Repository;
 
+import io.lettuce.core.dynamic.annotation.Param;
 import online.mushu.server.Entity.TransactionRecords;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -11,12 +14,10 @@ import java.util.List;
  */
 public interface TransactionRecordsRepository extends JpaRepository<TransactionRecords, String> {
 
-    TransactionRecords findByID(String transactionId);
 
-    TransactionRecords updateByID(String transactionId, TransactionRecords transactionRecords);
+    @Modifying
+    @Query("delete from TransactionRecords tr where tr.buyer.id = :buyerID and tr.seller.id = :sellerID")
+    List<TransactionRecords> findByBuyerIDAndSellerID(@Param("buyerID") int buyerID, @Param("sellerID") int sellerID);
 
-    List<TransactionRecords> findByBuyerIDAndSellerID(int buyerID, int sellerID);
-
-    TransactionRecords deleteByID(String transactionId);
 
 }

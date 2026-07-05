@@ -1,9 +1,11 @@
 package online.mushu.server.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * =======
@@ -13,12 +15,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "Goods")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Goods {
 
     @Id
     @Column(name = "ID", columnDefinition = "CHAR(36)")
-    private String ID;
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -27,11 +28,31 @@ public class Goods {
             foreignKey = @ForeignKey(
                     name = "fk_goods_user",
                     value = ConstraintMode.PROVIDER_DEFAULT,
-                    foreignKeyDefinition = "FOREIGN KEY (userID) REFERENCES User(ID) " +
-                            "ON DELETE CASCADE"
+                    foreignKeyDefinition = "FOREIGN KEY (userID) REFERENCES User(ID) "
             )
     )
     private User user;
+
+    @OneToMany(
+            mappedBy = "goods",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<GoodImages> images = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "goods",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ReleaseInf> releasesInfList = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "goods",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<TransactionRecords> transactionRecordsList  = new ArrayList<>();
 
     @Column(name = "name")
     private String name;
@@ -45,7 +66,14 @@ public class Goods {
     @Column(name = "state", columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
     private boolean state;
 
-
-
+    public Goods(String id, User user, String name, int type, double price, String text, boolean state) {
+        setId(id);
+        setUser(user);
+        setName(name);
+        setType(type);
+        setPrice(price);
+        setText(text);
+        setState(state);
+    }
 
 }

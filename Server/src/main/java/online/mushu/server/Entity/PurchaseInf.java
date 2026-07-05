@@ -20,7 +20,7 @@ public class PurchaseInf {
 
     @Id
     @Column(name = "ID", columnDefinition = "CHAR(36)")
-    private String ID;
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -29,8 +29,7 @@ public class PurchaseInf {
             foreignKey = @ForeignKey(
                     name = "fk_purchase_inf_user",
                     value = ConstraintMode.PROVIDER_DEFAULT,
-                    foreignKeyDefinition = "FOREIGN KEY (userID) REFERENCES User(ID) " +
-                            "ON DELETE CASCADE"
+                    foreignKeyDefinition = "FOREIGN KEY (userID) REFERENCES User(ID) "
             )
     )
     private User user;

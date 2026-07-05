@@ -31,11 +31,11 @@ public class ReleaseInfService {
     }
 
     public ReleaseInf getReleaseInf(String id) {
-        return releaseInfRepository.findByID(id);
+        return releaseInfRepository.findById(id).orElse(null);
     }
 
     public void updateReleaseInf(ReleaseInf releaseInf) {
-        releaseInfRepository.updateByID(releaseInf.getID(), releaseInf);
+        releaseInfRepository.save(releaseInf);
     }
 
     public void deleteReleaseInf(String id) {}
