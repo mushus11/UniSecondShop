@@ -15,5 +15,6 @@ public interface GoodsRepository extends JpaRepository<Goods, String> {
 
     Goods findByID(String id);
 
+    Goods updateByID(String id, Goods goods);
 
 }

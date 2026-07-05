@@ -33,4 +33,9 @@ public class GoodsService {
     public Goods getGoodsByID(String id) {
         return goodsRepository.findByID(id);
     }
+
+    public void updateGood(Goods good) {
+        String id = good.getID();
+        goodsRepository.updateByID(id, good);
+    }
 }
