@@ -1,9 +1,6 @@
 package online.mushu.server.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +11,7 @@ import lombok.NoArgsConstructor;
  */
 
 @Entity
+@Table(name = "UserProfile")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,7 +25,7 @@ public class UserProfile {
     private String college;
     @Column(name = "grade")
     private String grade;
-    @Column(name = "telephone", columnDefinition = "CHAR(11) NOT NULL")
+    @Column(name = "telephone", columnDefinition = "CHAR(11)")
     private String telephone;
     @Column(name = "profile", columnDefinition = "TEXT")
     private String profile;

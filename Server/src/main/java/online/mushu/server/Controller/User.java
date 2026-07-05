@@ -20,7 +20,7 @@ import java.io.IOException;
  * =======
  */
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/user")
 public class User {
 
     @Resource
@@ -28,7 +28,7 @@ public class User {
     @Resource
     UserProfileService userProfileService;
 
-    private String basePath = "src/main/resources/static/images/";
+    private final String basePath = "src/main/resources/static/images/";
 
     @PostMapping("/register")
     public RegisterVo register(@RequestBody RegisterDto register) {
@@ -41,6 +41,7 @@ public class User {
         UserProfile userProfile = new UserProfile(id);
         userService.save(user);
         userProfileService.saveUserProfile(userProfile);
+        System.out.println("注册成功");
 
         return RegisterVo.Success(id);
     }
@@ -61,6 +62,8 @@ public class User {
         userProfile.setProfile(profile);
 
         userProfileService.saveUserProfile(userProfile);
+
+        System.out.println("信息修改成功");
 
         return new ReviseVo(id, college, grade, telephone, profile, certified);
     }

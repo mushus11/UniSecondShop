@@ -23,4 +23,8 @@ public class RegisterVo {
         return new RegisterVo(id, 200);
     }
 
+    public static RegisterVo Failure(int id) {
+        return new RegisterVo(id, 201);
+    }
+
 }

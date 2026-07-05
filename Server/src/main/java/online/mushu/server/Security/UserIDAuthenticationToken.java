@@ -13,15 +13,13 @@ import java.util.Collection;
  * =======
  * =======
  */
+@Setter
 public class UserIDAuthenticationToken extends AbstractAuthenticationToken {
     @Serial
     private static final long serialVersionUID = 225L;
-    @Setter
     private int principal;
-    @Setter
     @Getter
     private String credentials = "";
-    @Setter
     @Getter
     private UserIdDetail userDetails;
 
@@ -35,9 +33,9 @@ public class UserIDAuthenticationToken extends AbstractAuthenticationToken {
 
     public UserIDAuthenticationToken(UserIdDetail detail, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
-        setPrincipal(userDetails.getId());
+        setPrincipal(detail.getId());
         setCredentials(null);
-        setDetails(detail);
+        setUserDetails(detail);
         setAuthenticated(true);
     }
 

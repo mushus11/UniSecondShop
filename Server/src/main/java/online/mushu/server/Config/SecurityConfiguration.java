@@ -75,7 +75,7 @@ public class SecurityConfiguration {
 //                除登陆意外所有请求都需验证
                 .authorizeHttpRequests(conf -> conf
                         .requestMatchers("/api/auth/login").permitAll()//表示将所有 /api/auth/login 到来的数据都放行
-                        .requestMatchers("/api/auth/register").permitAll()//表示注册的路径放行
+                        .requestMatchers("/api/user/register").permitAll()//表示注册的路径放行
                         .anyRequest().authenticated()
                 )
 

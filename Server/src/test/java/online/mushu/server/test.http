@@ -1,0 +1,30 @@
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "id": 0,
+  "password": "123456"
+}
+###
+
+POST http://localhost:8080/api/user/register
+Content-Type: application/json
+
+{
+  "id": 0,
+  "password": "123456"
+}
+###
+
+POST http://localhost:8080/api/user/reviseBaseInf
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+  "id": 0,
+  "certified": false,
+  "college": "",
+  "grade": "",
+  "profile": "",
+  "telephone": ""
+}
