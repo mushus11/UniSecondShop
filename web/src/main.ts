@@ -12,6 +12,7 @@ import CategoriesPage from "@/components/CategoriesPage.vue";
 import CatalogPage from "@/components/CatalogPage.vue";
 import ProfilePage from "@/components/ProfilePage.vue";
 import ShopPage from "@/components/ShopPage.vue";
+import SignPage from "@/components/SignPage.vue";
 import Login from './components/Login.vue';
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -22,6 +23,7 @@ const routes = [
     // 公开路由（不需要登录）
     { path: '/', component: Login },
     { path: '/Login', component: Login },
+    { path: '/Sign', component: SignPage },
 
     // 需要登录的路由（添加 meta 标识）
     { path: '/Home', component: HomePage, meta: { requiresAuth: true } },
