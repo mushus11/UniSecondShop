@@ -1,0 +1,24 @@
+package online.mushu.server.Vo;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * =======
+ * =======
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class UserInfVo {
+    private int id;
+    private String college;
+    private String grade;
+    private String telephone;
+    private String profile;
+    private boolean certified;
+    private String image;
+}
