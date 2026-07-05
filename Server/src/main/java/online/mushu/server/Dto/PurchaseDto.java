@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 /**
  * =======
  * =======
@@ -11,8 +13,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetGoodsInfDto {
-    private int userID;
-    private String goodID;
+public class PurchaseDto {
+    private int UserID;
+    private String goodsName;
     private int type;
+    private String text;
+    private double price;
+    private Timestamp purchaseTime;
 }

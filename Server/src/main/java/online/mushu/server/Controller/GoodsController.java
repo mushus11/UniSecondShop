@@ -4,12 +4,17 @@ import jakarta.annotation.Resource;
 import online.mushu.server.Dto.GetGoodsInfDto;
 import online.mushu.server.Dto.GoodDto;
 import online.mushu.server.Entity.Goods;
+import online.mushu.server.Entity.ReleaseInf;
 import online.mushu.server.Entity.User;
 import online.mushu.server.Service.GoodsService;
+import online.mushu.server.Service.ReleaseInfService;
 import online.mushu.server.Service.UserService;
 import online.mushu.server.Vo.GetGoodsInfVo;
+import online.mushu.server.Vo.GoodVo;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,18 +30,22 @@ public class GoodsController {
     private GoodsService goodsService;
     @Resource
     private UserService userService;
+    @Resource
+    private ReleaseInfService releaseInfService;
 
-    @PostMapping("/uploadGoodsInf")
-    public String uploadGoodsInf(@RequestBody List<GoodDto> dtoList) {
-        List<Goods> goods = new ArrayList<>();
-        for (GoodDto dto : dtoList) {
-            String id = UUID.randomUUID().toString();
-            User user = userService.getUserById(dto.getUserId());
-            Goods good = new Goods(id, user, dto.getName(), dto.getType(), dto.getPrice(), dto.getText(), dto.isState());
-            goods.add(good);
-        }
-        goodsService.saveAll(goods);
-        return "success";
+    @PostMapping("/uploadGoodInf")
+    public GoodVo uploadGoodInf(@RequestBody GoodDto dto) {
+        String id = UUID.randomUUID().toString();
+        User user = userService.getUserById(dto.getUserId());
+        Goods good = new Goods(id, user, dto.getName(), dto.getType(), dto.getPrice(), dto.getText(), dto.isState());
+        goodsService.save(good);
+        Timestamp upLoadTime = new Timestamp(System.currentTimeMillis());
+        ReleaseInf releaseInf = new ReleaseInf(id, good, upLoadTime, null, 0, false, false);
+        releaseInfService.saveReleaseInf(releaseInf);
+        return GoodVo.builder()
+                .goodID(id)
+                .userID(dto.getUserId())
+                .build();
     }
 
     @PostMapping("/changeGoodInf")
@@ -65,8 +74,8 @@ public class GoodsController {
     }
 
 //    查找所有商品
-    @GetMapping("/getGoodsInf")
-    public List<GetGoodsInfVo> getGoodsInf(@RequestBody GetGoodsInfDto dto) {
+    @GetMapping("/getGoodsInfByUser")
+    public List<GetGoodsInfVo> getGoodsInfByUser(@RequestBody GetGoodsInfDto dto) {
         int id = dto.getUserID();
         List<GetGoodsInfVo> goodsInfVos = new ArrayList<>();
         List<Goods> goods = goodsService.getGoods(id);
@@ -83,6 +92,42 @@ public class GoodsController {
             goodsInfVos.add(getGoodsInfVo);
         }
         return goodsInfVos;
+    }
+
+    @GetMapping("/getGoodsInfByType")
+    public List<GetGoodsInfVo> getGoodsInfByType(@RequestBody GetGoodsInfDto dto) {
+        int type = dto.getType();
+        List<GetGoodsInfVo> list = new ArrayList<>();
+        List<Goods> goods = goodsService.getGoods(type);
+        for (Goods good : goods) {
+            GetGoodsInfVo vo = GetGoodsInfVo.builder()
+                    .id(good.getID())
+                    .userId(good.getUser().getID())
+                    .name(good.getName())
+                    .price(good.getPrice())
+                    .text(good.getText())
+                    .type(good.getType())
+                    .state(good.isState())
+                    .build();
+            list.add(vo);
+        }
+        return list;
+    }
+
+    @GetMapping("/getGoodsInfIsHarry")
+    public List<ReleaseInf> getGoodsInfIsHarry() {
+        return releaseInfService.getHurry();
+    }
+
+    @GetMapping("/getGoodsInfIsTop")
+    public List<ReleaseInf> getGoodsInfIsTop() {
+        return releaseInfService.getTop();
+    }
+
+    @DeleteMapping("/delete")
+    public String delete(@RequestParam(name = "goodID") String goodID) {
+        goodsService.deleteGood(goodID);
+        return "success";
     }
 
 }

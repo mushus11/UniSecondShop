@@ -35,4 +35,11 @@ public class GoodImages {
 
     @Column(name = "voucher", columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
     private boolean voucher;
+
+    @Column(name = "text")
+    private String text;
+
+    @Lob
+    @Column(name = "image")
+    private byte[] image;
 }

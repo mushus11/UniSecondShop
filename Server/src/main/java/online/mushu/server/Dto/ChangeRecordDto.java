@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetGoodsInfDto {
-    private int userID;
-    private String goodID;
-    private int type;
+public class ChangeRecordDto {
+    private String id;
 }

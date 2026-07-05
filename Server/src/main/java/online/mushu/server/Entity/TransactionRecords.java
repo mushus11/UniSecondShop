@@ -71,6 +71,6 @@ public class TransactionRecords {
     @Lob
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;
-    @Column(name = "state", columnDefinition = "TINYINT(1) NOT NULL DEFAULT 1")
+    @Column(name = "state", columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
     private boolean state;
 }

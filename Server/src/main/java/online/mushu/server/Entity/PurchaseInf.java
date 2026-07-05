@@ -35,20 +35,14 @@ public class PurchaseInf {
     )
     private User user;
 
+    @Column(name = "goodsName")
+    private String goodsName;
     @Column(name = "type")
     private int type;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "goodID",
-            nullable = false,
-            foreignKey = @ForeignKey(
-                    name = "fk_purchase_inf_goods",
-                    value = ConstraintMode.PROVIDER_DEFAULT,
-                    foreignKeyDefinition = "FOREIGN KEY (goodID) REFERENCES Goods(ID) " +
-                            "ON DELETE CASCADE"
-            )
-    )
-    private Goods goods;
+    @Lob
+    @Column(name = "text", columnDefinition = "TEXT")
+    private String text;
+
     @Column(name = "purchaseTime")
     private Timestamp purchaseTime;
     @Column(name = "price")

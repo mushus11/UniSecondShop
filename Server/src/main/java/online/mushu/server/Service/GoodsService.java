@@ -30,12 +30,24 @@ public class GoodsService {
         goodsRepository.saveAll(goodsList);
     }
 
+    public void save(Goods goods) {
+        goodsRepository.save(goods);
+    }
+
     public Goods getGoodsByID(String id) {
         return goodsRepository.findByID(id);
+    }
+
+    public List<Goods> getGoodsByType(int type) {
+        return goodsRepository.findByType(type);
     }
 
     public void updateGood(Goods good) {
         String id = good.getID();
         goodsRepository.updateByID(id, good);
+    }
+
+    public void deleteGood(String id) {
+        goodsRepository.deleteByID(id);
     }
 }

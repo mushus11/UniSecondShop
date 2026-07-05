@@ -1,6 +1,7 @@
-package online.mushu.server.Dto;
+package online.mushu.server.Vo;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetGoodsInfDto {
+@Builder
+public class GoodVo {
     private int userID;
     private String goodID;
-    private int type;
 }
