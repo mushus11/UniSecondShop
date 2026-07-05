@@ -18,6 +18,4 @@
       <module name="serv" options="-parameters" />
     </option>
   </component>
-    </annotationProcessing>
-  </component>
 </project>
