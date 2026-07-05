@@ -1,15 +1,15 @@
 <script setup>
-import UseLogin from './UseLogin';
-let { username, password, btnText, login } = UseLogin();
+import {useLoginStore } from "@/store/UseLogin"
+const login = useLoginStore()
 </script>
 
 <template>
-  <div class="login-box">
+  <div class="login-box" v-if="!login.IfLogin">
     <h2 class="login-title">登录</h2>
     <div class="form-item">
       <label>账号：</label>
       <el-input
-          v-model="username"
+          v-model="login.username"
           style="width: 240px"
           placeholder="Please input"
           clearable
@@ -18,14 +18,14 @@ let { username, password, btnText, login } = UseLogin();
     <div class="form-item">
       <label>密码：</label>
       <el-input
-          v-model="password"
+          v-model="login.password"
           style="width: 240px"
           type="password"
           placeholder="Please input password"
           show-password
       />
     </div>
-    <button @click="login()" class="login-btn">{{ btnText }}</button>
+    <button @click="login.login()" class="login-btn">{{ login.btnText }}</button>
   </div>
 </template>
 
@@ -33,7 +33,7 @@ let { username, password, btnText, login } = UseLogin();
 /* 登录卡片容器 */
 .login-box {
   width: 420px;
-  margin: 80px auto;
+  margin: 400px auto;
   padding: 35px;
   background: #ffffff;
   border-radius: 12px;

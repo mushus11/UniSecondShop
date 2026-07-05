@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import {useLoginStore } from "@/store/UseLogin"
+const login = useLoginStore()
 </script>
 
 <template>
   <div class="nav-wrap">
-    <div class="nav">
+    <div class="nav" v-if="login.IfLogin">
       <RouterLink to="/Home" class="nav-item">首页</RouterLink>
       <RouterLink to="/Shop" class="nav-item">商城</RouterLink>
-      <RouterLink to="/Back" class="nav-item">后台</RouterLink>
+      <RouterLink to="/Users" class="nav-item">用户管理</RouterLink>
+      <RouterLink to="/Catalog" class="nav-item">商品档案管理</RouterLink>
+      <RouterLink to="/Listings" class="nav-item">交易发布管理</RouterLink>
+      <RouterLink to="/Categories" class="nav-item">分类专区管理</RouterLink>
+      <RouterLink to="/Orders" class="nav-item">交易管理</RouterLink>
+      <RouterLink to="/Reports" class="nav-item">统计报表</RouterLink>
+      <RouterLink to="/Profile" class="nav-item">个人</RouterLink>
+      <RouterLink to="/" @click="login.logout()" class="nav-item">注销</RouterLink>
     </div>
     <div class="page-view">
       <RouterView />
