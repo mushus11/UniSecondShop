@@ -31,8 +31,6 @@ public class User {
     @Resource
     UserProfileService userProfileService;
 
-    private final String basePath = "src/main/resources/static/images/";
-
     @PostMapping("/register")
     public RegisterVo register(@RequestBody RegisterDto register) {
 
@@ -71,33 +69,7 @@ public class User {
         return new ReviseVo(id, college, grade, telephone, profile, certified);
     }
 
-    @PostMapping("/postImage")
-    public String postImage(@RequestParam("image") MultipartFile file, @RequestParam int id) {
-
-        if (file.isEmpty()) {
-            return "请上传图片";
-        }
-        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-
-        String fileName = id + suffix;
-        String path = basePath + fileName;
-
-        File fileDir = new File(path);
-
-        try {
-            file.transferTo(fileDir);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        UserProfile userProfile = userProfileService.getUserProfile(id);
-        userProfile.setImage(path);
-        userProfileService.saveUserProfile(userProfile);
-
-        return path;
-
-    }
-
+//可行
     @PostMapping("/changePassword")
     public String changePassword(@RequestBody ChangePasswordDto dto) {
         int id = dto.getId();
@@ -112,6 +84,7 @@ public class User {
         return "修改成功";
     }
 
+//    可行
     @GetMapping("/getUserInf")
     public UserInfVo getUserInf(@RequestBody UserInfDto dto) {
         int id = dto.getId();

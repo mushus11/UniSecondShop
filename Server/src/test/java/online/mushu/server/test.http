@@ -28,3 +28,83 @@ Content-Type: application/json
   "profile": "",
   "telephone": ""
 }
+###
+
+POST http://localhost:8080/api/user/changePassword
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+"id": 0,
+"newPassword": "12345678"
+}
+###
+
+GET http://localhost:8080/api/user/getUserInf
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+  "id": 0
+}
+###
+
+POST http://localhost:8080/api/goods/uploadGoodInf
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+  "userId": 0,
+  "name": "水瓶",
+  "type": 0,
+  "price": 2.2,
+  "text": "一个很好的水瓶",
+  "state": false
+}
+###
+
+POST http://localhost:8080/api/goods/changeGoodInf?goodID=a5abeac7-8434-4b9c-8ce1-c3a139ead104
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+  "userId": 0,
+  "name": "水杯",
+  "type": 0,
+  "price": 2.2,
+  "text": "一个很好的水杯",
+  "state": true
+}
+###
+
+GET http://localhost:8080/api/goods/getGoodInf
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+  "userID": 0,
+  "goodID": "a5abeac7-8434-4b9c-8ce1-c3a139ead104",
+  "type": 0
+}
+###
+
+GET http://localhost:8080/api/goods/getGoodsInfByUser
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+  "userID": 0,
+  "goodID": "a5abeac7-8434-4b9c-8ce1-c3a139ead104",
+  "type": 0
+}
+###
+
+GET http://localhost:8080/api/goods/getGoodsInfByType
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+  "userID": 0,
+  "goodID": "a5abeac7-8434-4b9c-8ce1-c3a139ead104",
+  "type": 0
+}

@@ -15,7 +15,7 @@ import java.util.List;
 public interface GoodsRepository extends JpaRepository<Goods, String> {
 
     @Modifying
-    @Query("delete from Goods g where g.user.id = :id")
+    @Query("select g from Goods g where g.user.id = :id")
     List<Goods> findByUserID(@Param("id") int id);
 
     List<Goods> findByType(int type);

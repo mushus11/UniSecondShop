@@ -22,6 +22,7 @@ import java.util.UUID;
  * =======
  * =======
  */
+@RestController
 @RequestMapping("/api/goods")
 public class GoodsController {
 
@@ -32,6 +33,7 @@ public class GoodsController {
     @Resource
     private ReleaseInfService releaseInfService;
 
+//    可行
     @PostMapping("/uploadGoodInf")
     public GoodVo uploadGoodInf(@RequestBody GoodDto dto) {
         String id = UUID.randomUUID().toString();
@@ -47,6 +49,7 @@ public class GoodsController {
                 .build();
     }
 
+//    可行
     @PostMapping("/changeGoodInf")
     public String changeGoodInf(@RequestBody GoodDto dto, @RequestParam(name = "goodID") String goodID) {
         User user = userService.getUserById(dto.getUserId());
@@ -55,6 +58,7 @@ public class GoodsController {
         return "success";
     }
 
+//    可行
 //    查找单个商品
     @GetMapping("/getGoodInf")
     public GetGoodsInfVo getGoodInf(@RequestBody GetGoodsInfDto dto) {
@@ -72,6 +76,7 @@ public class GoodsController {
 
     }
 
+//    可行
 //    查找所有商品
     @GetMapping("/getGoodsInfByUser")
     public List<GetGoodsInfVo> getGoodsInfByUser(@RequestBody GetGoodsInfDto dto) {
@@ -93,6 +98,7 @@ public class GoodsController {
         return goodsInfVos;
     }
 
+//    可行
     @GetMapping("/getGoodsInfByType")
     public List<GetGoodsInfVo> getGoodsInfByType(@RequestBody GetGoodsInfDto dto) {
         int type = dto.getType();

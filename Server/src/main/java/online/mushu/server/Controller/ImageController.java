@@ -4,8 +4,10 @@ import jakarta.annotation.Resource;
 import online.mushu.server.Dto.ImageInfDto;
 import online.mushu.server.Entity.GoodImages;
 import online.mushu.server.Entity.Goods;
+import online.mushu.server.Entity.UserProfile;
 import online.mushu.server.Service.GoodImagesService;
 import online.mushu.server.Service.GoodsService;
+import online.mushu.server.Service.UserProfileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,10 @@ public class ImageController {
     GoodImagesService goodImagesService;
     @Resource
     GoodsService goodsService;
+    @Resource
+    UserProfileService userProfileService;
+
+    private final String basePath = "src/main/resources/static/images/";
 
     @PostMapping("/commonImage")
     public String commonImage(@RequestParam(name = "images") List<MultipartFile> images,
@@ -117,6 +124,33 @@ public class ImageController {
         }
 
         return "success";
+    }
+
+    @PostMapping("/postImage")
+    public String postImage(@RequestParam("image") MultipartFile file, @RequestParam int id) {
+
+        if (file.isEmpty()) {
+            return "请上传图片";
+        }
+        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+
+        String fileName = id + suffix;
+        String path = basePath + fileName;
+
+        File fileDir = new File(path);
+
+        try {
+            file.transferTo(fileDir);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        UserProfile userProfile = userProfileService.getUserProfile(id);
+        userProfile.setImage(path);
+        userProfileService.saveUserProfile(userProfile);
+
+        return path;
+
     }
 
     @GetMapping("/getImagesID")
