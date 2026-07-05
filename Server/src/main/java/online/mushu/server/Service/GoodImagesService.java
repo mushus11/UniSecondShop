@@ -5,6 +5,8 @@ import online.mushu.server.Entity.GoodImages;
 import online.mushu.server.Repository.GoodImagesRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * =======
  * =======
@@ -23,5 +25,13 @@ public class GoodImagesService {
 
     public void deleteImage(String id) {
         goodImagesRepository.deleteByGoodID(id);
+    }
+
+    public List<GoodImages> getImageID(String goodID) {
+        return goodImagesRepository.findByGoodID(goodID);
+    }
+
+    public GoodImages getImage(String id) {
+        return goodImagesRepository.findById(id).orElse(null);
     }
 }

@@ -6,14 +6,17 @@ import online.mushu.server.Entity.GoodImages;
 import online.mushu.server.Entity.Goods;
 import online.mushu.server.Service.GoodImagesService;
 import online.mushu.server.Service.GoodsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -116,5 +119,30 @@ public class ImageController {
         return "success";
     }
 
+    @GetMapping("/getImagesID")
+    public List<String> getImages(@RequestParam(name = "goodID") String goodID) {
+        List<GoodImages> imagesID = goodImagesService.getImageID(goodID);
+        List<String> images = new ArrayList<>();
+        for (GoodImages imageEntity : imagesID) {
+            images.add(imageEntity.getId());
+        }
+        return images;
+    }
 
+    @GetMapping("/getImages/{imageID}")
+    public ResponseEntity<byte[]> getImage(@PathVariable("imageID") String imageID) {
+        GoodImages image = goodImagesService.getImage(imageID);
+        byte[] data = image.getImage();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        headers.set("Cache-Control", "max-age=86400");
+
+        return new ResponseEntity<>(data, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/getImageText/{imageID}")
+    public String getImageText(@PathVariable("imageID") String imageID) {
+        GoodImages image = goodImagesService.getImage(imageID);
+        return image.getText();
+    }
 }

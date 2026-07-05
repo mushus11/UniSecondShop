@@ -12,7 +12,6 @@ import online.mushu.server.Service.UserService;
 import online.mushu.server.Vo.GetGoodsInfVo;
 import online.mushu.server.Vo.GoodVo;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
