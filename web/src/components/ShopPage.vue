@@ -3,16 +3,15 @@
     <h2 class="page-title">🛒 商品浏览</h2>
 
     <div class="category-filter">
-      <el-button :type="activeCategory === null ? 'primary' : ''" @click="activeCategory = null; loadGoods()">全部</el-button>
       <el-button v-for="(label, key) in categoryMap" :key="key" :type="activeCategory === Number(key) ? 'primary' : ''" @click="activeCategory = Number(key); loadGoods()">
         {{ label }}
       </el-button>
     </div>
 
     <div class="search-bar">
-      <el-input v-model="keyword" placeholder="搜索商品名称" style="width: 300px" clearable @keyup.enter="filterGoods" />
-      <el-button type="primary" @click="filterGoods">搜索</el-button>
-      <el-button @click="keyword = ''; loadGoods()">重置</el-button>
+      <el-input v-model="keyword" placeholder="搜索商品名称" style="width: 300px" clearable @keyup.enter="currentPage = 1" />
+      <el-button type="primary" @click="currentPage = 1">搜索</el-button>
+      <el-button @click="keyword = ''; currentPage = 1">重置</el-button>
     </div>
 
     <div class="product-grid" v-loading="loading">
@@ -25,7 +24,7 @@
         </div>
         <div class="product-info">
           <div class="product-name">{{ item.name }}</div>
-          <div class="product-price">¥{{ item.price.toFixed(2) }}</div>
+          <div class="product-price">¥{{ item.price?.toFixed(2) }}</div>
           <div class="product-meta">发布者: {{ item.userId }}</div>
           <div class="product-status">
             <el-tag :type="item.state ? 'info' : 'success'" size="small">{{ item.state ? '已售出' : '在售' }}</el-tag>
@@ -38,7 +37,7 @@
     </div>
 
     <div class="pagination">
-      <el-pagination v-model:page-size="pageSize" v-model:current-page="currentPage" :total="total" :page-sizes="[8, 16, 24]" layout="total, sizes, prev, pager, next" @size-change="handlePageChange" @current-change="handlePageChange" />
+      <el-pagination v-model:page-size="pageSize" v-model:current-page="currentPage" :total="total" :page-sizes="[8, 16, 24]" layout="total, sizes, prev, pager, next" />
     </div>
 
     <el-dialog v-model="buyDialogVisible" title="创建交易" width="500px">
@@ -81,44 +80,47 @@ const categoryMap: Record<number, string> = {
   5: '💄 美妆文具'
 }
 
-const activeCategory = ref<number | null>(null)
+// 默认选中第一个分类（教材书本）
+const activeCategory = ref<number>(0)
 const keyword = ref('')
 const allGoods = ref<any[]>([])
 const loading = ref(false)
-
 const currentPage = ref(1)
 const pageSize = ref(8)
-const total = computed(() => filteredGoods.value.length)
 
-const filteredGoods = computed(() => {
+const total = computed(() => filteredByKeyword.value.length)
+
+const filteredByKeyword = computed(() => {
   let list = allGoods.value
   if (keyword.value.trim()) {
     const kw = keyword.value.trim().toLowerCase()
     list = list.filter(g => g.name?.toLowerCase().includes(kw) || g.text?.toLowerCase().includes(kw))
   }
+  return list
+})
+
+const filteredGoods = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value
-  return list.slice(start, start + pageSize.value)
+  return filteredByKeyword.value.slice(start, start + pageSize.value)
 })
 
 const getImageUrl = (goodId: string) => `/api/image/getImage/placeholder`
 
 const loadGoods = async () => {
+  // 如果没有分类被选中，默认选中第一个
+  if (activeCategory.value === null) {
+    activeCategory.value = 0
+  }
+
   loading.value = true
   try {
-    if (activeCategory.value !== null) {
-      const res = await api.get('/goods/getGoodsInfByType', {
-        params: { type: activeCategory.value, userID: parseInt(loginStore.id) || 0, goodID: '' }
-      })
-      allGoods.value = Array.isArray(res.data) ? res.data : []
-    } else {
-      const promises = [0, 1, 2, 3, 4, 5].map(type =>
-        api.get('/goods/getGoodsInfByType', {
-          params: { type, userID: parseInt(loginStore.id) || 0, goodID: '' }
-        }).then(r => (Array.isArray(r.data) ? r.data : [])).catch(() => [])
-      )
-      const results = await Promise.all(promises)
-      allGoods.value = results.flat()
-    }
+    const res = await api.get('/goods/getGoodsInfByType', {
+      params: {
+        type: activeCategory.value,
+        goodID: ''
+      }
+    })
+    allGoods.value = Array.isArray(res.data) ? res.data : []
     currentPage.value = 1
   } catch (e) {
     console.error('加载商品失败:', e)
@@ -127,12 +129,6 @@ const loadGoods = async () => {
     loading.value = false
   }
 }
-
-const filterGoods = () => {
-  currentPage.value = 1
-}
-
-const handlePageChange = () => {}
 
 const buyDialogVisible = ref(false)
 const submitting = ref(false)

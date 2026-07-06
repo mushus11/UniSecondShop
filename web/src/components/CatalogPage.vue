@@ -9,16 +9,12 @@
     </div>
 
     <div class="search-bar">
-      <el-input v-model="keyword" placeholder="搜索商品名称" style="width: 200px" clearable @keyup.enter="filterList" />
-      <el-select v-model="filterType" placeholder="全部分类" style="width: 150px; margin-left: 12px" @change="filterList">
+      <el-input v-model="keyword" placeholder="搜索商品名称" style="width: 200px" clearable />
+      <el-select v-model="filterType" placeholder="全部分类" style="width: 150px; margin-left: 12px">
         <el-option label="全部" :value="null" />
         <el-option v-for="(label, key) in categoryMap" :key="key" :label="label" :value="Number(key)" />
       </el-select>
-      <el-select v-model="filterCondition" placeholder="新旧程度" style="width: 130px; margin-left: 12px" @change="filterList">
-        <el-option label="全部" :value="null" />
-        <el-option v-for="(label, key) in conditionMap" :key="key" :label="label" :value="key" />
-      </el-select>
-      <el-button type="primary" style="margin-left: 12px" @click="filterList">搜索</el-button>
+      <el-button type="primary" style="margin-left: 12px" @click="currentPage = 1">搜索</el-button>
       <el-button style="margin-left: 8px" @click="resetFilters">重置</el-button>
       <el-button type="success" style="margin-left: 8px" @click="handleAdd">添加商品</el-button>
     </div>
@@ -28,11 +24,6 @@
       <el-table-column prop="name" label="商品名称" width="150" />
       <el-table-column label="分类" width="110">
         <template #default="{ row }"><el-tag>{{ categoryMap[row.type] || '未知' }}</el-tag></template>
-      </el-table-column>
-      <el-table-column label="新旧程度" width="100">
-        <template #default="{ row }">
-          <el-tag :type="conditionTagMap[row.condition] || 'info'" size="small">{{ conditionMap[row.condition] || '未设置' }}</el-tag>
-        </template>
       </el-table-column>
       <el-table-column label="价格" width="90">
         <template #default="{ row }">¥{{ row.price?.toFixed(2) }}</template>
@@ -56,7 +47,6 @@
       <el-pagination v-model:page-size="pageSize" v-model:current-page="currentPage" :total="filteredList.length" :page-sizes="[10, 20, 50]" layout="total, sizes, prev, pager, next" />
     </div>
 
-    <!-- 编辑/添加弹窗 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px">
       <el-form :model="form" label-width="100px">
         <el-form-item label="商品名称" required>
@@ -69,11 +59,6 @@
         </el-form-item>
         <el-form-item label="价格" required>
           <el-input-number v-model="form.price" :min="0" :precision="2" style="width:100%" />
-        </el-form-item>
-        <el-form-item label="新旧程度">
-          <el-select v-model="form.condition" style="width:100%" placeholder="请选择新旧程度">
-            <el-option v-for="(label, key) in conditionMap" :key="key" :label="label" :value="key" />
-          </el-select>
         </el-form-item>
         <el-form-item label="商品描述">
           <el-input v-model="form.text" type="textarea" :rows="3" placeholder="请描述商品信息" />
@@ -88,7 +73,6 @@
       </template>
     </el-dialog>
 
-    <!-- 商品图片管理弹窗 -->
     <el-dialog v-model="imageDialogVisible" title="商品图片管理" width="750px">
       <div v-if="currentGoodId" class="image-section">
         <div class="image-upload-row">
@@ -119,7 +103,6 @@
       </template>
     </el-dialog>
 
-    <!-- 购买凭证管理弹窗 -->
     <el-dialog v-model="voucherDialogVisible" title="购买凭证管理" width="650px">
       <div v-if="currentGoodId" class="image-section">
         <div class="image-upload-row">
@@ -165,21 +148,6 @@ const categoryMap: Record<number, string> = {
   0: '教材书本', 1: '电子产品', 2: '服饰生活', 3: '运动器材', 4: '宿舍家具', 5: '美妆文具'
 }
 
-const conditionMap: Record<string, string> = {
-  'new': '全新',
-  'like_new': '几乎全新',
-  'good': '九成新',
-  'fair': '八成新',
-  'used': '有使用痕迹'
-}
-const conditionTagMap: Record<string, string> = {
-  'new': 'success',
-  'like_new': 'success',
-  'good': '',
-  'fair': 'warning',
-  'used': 'danger'
-}
-
 const stats = reactive({ total: 0, active: 0, sold: 0 })
 const allList = ref<any[]>([])
 const loading = ref(false)
@@ -187,7 +155,6 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const keyword = ref('')
 const filterType = ref<number | null>(null)
-const filterCondition = ref<string | null>(null)
 
 const filteredList = computed(() => {
   let list = allList.value
@@ -197,9 +164,6 @@ const filteredList = computed(() => {
   }
   if (filterType.value !== null) {
     list = list.filter(g => g.type === filterType.value)
-  }
-  if (filterCondition.value !== null) {
-    list = list.filter(g => g.condition === filterCondition.value)
   }
   return list
 })
@@ -230,11 +194,9 @@ const loadGoods = async () => {
   }
 }
 
-const filterList = () => { currentPage.value = 1 }
 const resetFilters = () => {
   keyword.value = ''
   filterType.value = null
-  filterCondition.value = null
   currentPage.value = 1
 }
 
@@ -247,8 +209,7 @@ const form = reactive({
   type: 0,
   price: 0,
   text: '',
-  state: false,
-  condition: ''
+  state: false
 })
 
 const handleAdd = () => {
@@ -259,7 +220,6 @@ const handleAdd = () => {
   form.price = 0
   form.text = ''
   form.state = false
-  form.condition = ''
   dialogVisible.value = true
 }
 
@@ -269,9 +229,8 @@ const handleEdit = (row: any) => {
   form.name = row.name
   form.type = row.type
   form.price = row.price
-  form.text = row.text
+  form.text = row.text || ''
   form.state = row.state
-  form.condition = row.condition || ''
   dialogVisible.value = true
 }
 
@@ -291,11 +250,8 @@ const saveGoods = async () => {
       text: form.text,
       state: form.state
     }
-    if (form.condition) {
-      payload.text = `[${conditionMap[form.condition] || form.condition}] ${form.text}`
-    }
     const res = await api.post(url, payload)
-    if (res.data === 200 || res.data.code === 200) {
+    if (res.data === 200 || res.data.code === 200 || res.data.goodID) {
       ElMessage.success(form.id ? '修改成功' : '添加成功')
       dialogVisible.value = false
       loadGoods()
@@ -327,7 +283,6 @@ const handleDelete = (row: any) => {
   }).catch(() => {})
 }
 
-// ---- 商品图片管理 ----
 const imageDialogVisible = ref(false)
 const currentGoodId = ref('')
 const imageIds = ref<string[]>([])
@@ -358,7 +313,6 @@ const onImageUploadSuccess = () => {
   handleViewImages({ id: currentGoodId.value })
 }
 
-// ---- 购买凭证管理 ----
 const voucherDialogVisible = ref(false)
 const voucherImageIds = ref<string[]>([])
 const voucherLoading = ref(false)
@@ -374,7 +328,6 @@ const handleViewVouchers = async (row: any) => {
   try {
     const res = await api.get('/image/getImagesID', { params: { goodID: row.id } })
     const allIds = Array.isArray(res.data) ? res.data : []
-    // 过滤凭证图片 - 简单通过尝试获取text判断
     const vouchers: string[] = []
     for (const imgId of allIds) {
       try {

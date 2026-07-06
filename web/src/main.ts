@@ -18,7 +18,6 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import { useLoginStore } from "@/store/UseLogin"
 
-// 配置路由规则
 const routes = [
     { path: '/', component: Login },
     { path: '/Login', component: Login },
@@ -40,26 +39,21 @@ const router = createRouter({
 })
 
 const pinia = createPinia()
+const app = createApp(App)
+app.use(pinia)
+app.use(router)
+app.use(ElementPlus)
 
-router.beforeEach((to, from, next) => {
-    const loginStore = useLoginStore(pinia)
+router.beforeEach((to, _from, next) => {
+    const loginStore = useLoginStore()
     loginStore.loadFromLocalStorage()
-    const isLoggedIn = loginStore.jwt !== '' && loginStore.jwt !== null && loginStore.jwt !== undefined
+    const isLoggedIn = loginStore.isLoggedIn
 
-    if (to.meta.requiresAuth) {
-        if (!isLoggedIn) {
-            next({ path: '/Login', query: { redirect: to.fullPath } })
-        } else {
-            next()
-        }
+    if (to.meta.requiresAuth && !isLoggedIn) {
+        next({ path: '/Login', query: { redirect: to.fullPath } })
     } else {
         next()
     }
 })
-
-let app = createApp(App)
-app.use(pinia)
-app.use(router)
-app.use(ElementPlus)
 
 app.mount('#app')

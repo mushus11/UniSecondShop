@@ -1,12 +1,13 @@
 <template>
   <div class="page-container">
+    <!-- 页面标题 -->
     <h2 class="page-title">🏠 校园二手交易平台</h2>
-
+    <!-- 欢迎banner -->
     <div class="welcome-banner">
       <h3>欢迎回来，{{ username }}！</h3>
       <p>今日有 {{ stats.orders }} 笔交易处理中，{{ stats.products }} 件商品在售</p>
     </div>
-
+    <!-- 快捷操作 -->
     <div class="quick-actions">
       <div class="quick-card" @click="$router.push('/Listings')">
         <span class="quick-icon">📝</span>
@@ -25,7 +26,7 @@
         <span class="quick-label">个人中心</span>
       </div>
     </div>
-
+    <!-- 置顶商品 -->
     <div class="section-header">
       <h3>🔥 置顶商品</h3>
       <el-button text @click="$router.push('/Shop')">查看全部 →</el-button>
@@ -40,7 +41,7 @@
         </div>
         <div class="product-info">
           <div class="product-name">{{ getGoodName(item.goodId) }}</div>
-          <div class="product-meta">发布ID: {{ item.id }}</div>
+          <div class="product-meta">发布ID: {{ item.id?.substring(0, 12) }}...</div>
           <div class="product-tags">
             <el-tag v-if="item.topMark" type="danger" size="small">置顶</el-tag>
             <el-tag v-if="item.hurryMark" type="warning" size="small">急出</el-tag>
@@ -48,6 +49,7 @@
         </div>
       </div>
     </div>
+    <!-- 急出商品 -->
 
     <div class="section-header" style="margin-top:24px">
       <h3>⚡ 急出商品</h3>
@@ -63,7 +65,7 @@
         </div>
         <div class="product-info">
           <div class="product-name">{{ getGoodName(item.goodId) }}</div>
-          <div class="product-meta">发布ID: {{ item.id }}</div>
+          <div class="product-meta">发布ID: {{ item.id?.substring(0, 12) }}...</div>
           <div class="product-tags">
             <el-tag v-if="item.hurryMark" type="warning" size="small">急出</el-tag>
           </div>
@@ -74,44 +76,41 @@
 </template>
 
 <script setup lang="ts">
+// 引入依赖
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLoginStore } from '@/store/UseLogin'
 import api from '@/api'
-
+// 获取路由实例
 const router = useRouter()
+// 获取登录状态实例
 const loginStore = useLoginStore()
+// 用户名
 const username = ref(loginStore.username || loginStore.id || '用户')
-
-const stats = reactive({
-  products: 0,
-  orders: 0,
-  users: 0,
-  messages: 0
-})
-
-const loading = reactive({
-  top: false,
-  hurry: false
-})
-
+// 统计信息
+const stats = reactive({ products: 0, orders: 0 })
+// 加载状态
+const loading = reactive({ top: false, hurry: false })
+// 置顶商品列表
 const topGoods = ref<any[]>([])
+// 急出商品列表
 const hurryGoods = ref<any[]>([])
+// 商品缓存
 const goodsCache = ref<Map<string, any>>(new Map())
-
+// 获取商品图片url
 const getImageUrl = (goodId: string) => {
   return `/api/image/getImage/placeholder`
 }
-
+// 获取商品名称
 const getGoodName = (goodId: string) => {
   const cached = goodsCache.value.get(goodId)
-  return cached?.name || goodId?.substring(0, 8) || '商品'
+  return cached?.name || '商品'
 }
-
+// 跳转商品详情
 const goDetail = (item: any) => {
   router.push({ path: '/Shop', query: { goodId: item.goodId } })
 }
-
+// 加载置顶商品
 const loadTopGoods = async () => {
   loading.top = true
   try {
@@ -120,7 +119,7 @@ const loadTopGoods = async () => {
       topGoods.value = res.data
       for (const item of res.data) {
         if (item.goodId && !goodsCache.value.has(item.goodId)) {
-          fetchGoodDetail(item.goodId)
+          await fetchGoodDetail(item.goodId)
         }
       }
     }
@@ -130,7 +129,7 @@ const loadTopGoods = async () => {
     loading.top = false
   }
 }
-
+// 加载急出商品
 const loadHurryGoods = async () => {
   loading.hurry = true
   try {
@@ -139,7 +138,7 @@ const loadHurryGoods = async () => {
       hurryGoods.value = res.data
       for (const item of res.data) {
         if (item.goodId && !goodsCache.value.has(item.goodId)) {
-          fetchGoodDetail(item.goodId)
+          await fetchGoodDetail(item.goodId)
         }
       }
     }
@@ -149,19 +148,22 @@ const loadHurryGoods = async () => {
     loading.hurry = false
   }
 }
+// 获取商品详情
 
 const fetchGoodDetail = async (goodId: string) => {
+  // 空商品ID直接拦截，杜绝空参数请求
+  if (!goodId?.trim()) return
   try {
-    const res = await api.get('/goods/getGoodInf', {
-      params: { goodID: goodId, userID: parseInt(loginStore.id) || 0, type: 0 }
-    })
+    // 不传任何 params，仅依靠请求头Authorization鉴权
+    const res = await api.get('/goods/getGoodInf')
     if (res.data) {
       goodsCache.value.set(goodId, res.data)
     }
   } catch (e) {
-    // silent
+    console.error('获取商品详情失败', e)
   }
 }
+// 获取统计信息
 
 const loadStats = async () => {
   try {
@@ -170,7 +172,6 @@ const loadStats = async () => {
       stats.products = upRes.data.length
     }
   } catch (e) {
-    // use default
     stats.products = 0
   }
   try {
@@ -184,7 +185,7 @@ const loadStats = async () => {
     stats.orders = 0
   }
 }
-
+// 页面加载时执行
 onMounted(() => {
   username.value = loginStore.username || loginStore.id || '用户'
   loadTopGoods()

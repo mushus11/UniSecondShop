@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { useLoginStore } from "@/store/UseLogin"
+import { useRouter } from "vue-router"
 const login = useLoginStore()
+const router = useRouter()
+
+const handleLogout = () => {
+  login.logout()
+  router.push('/Login')
+}
 </script>
 
 <template>
   <div class="nav-wrap">
-    <div class="nav" v-if="login.jwt">
+    <div class="nav" v-if="login.isLoggedIn">
       <RouterLink to="/Home" class="nav-item">首页</RouterLink>
       <RouterLink to="/Shop" class="nav-item">商城</RouterLink>
       <RouterLink to="/Users" class="nav-item">用户管理</RouterLink>
@@ -15,7 +22,7 @@ const login = useLoginStore()
       <RouterLink to="/Orders" class="nav-item">交易管理</RouterLink>
       <RouterLink to="/Reports" class="nav-item">统计报表</RouterLink>
       <RouterLink to="/Profile" class="nav-item">个人中心</RouterLink>
-      <RouterLink to="/" @click="login.logout()" class="nav-item nav-logout">注销</RouterLink>
+      <span class="nav-item nav-logout" @click="handleLogout">注销</span>
     </div>
     <div class="page-view">
       <RouterView />
@@ -97,7 +104,6 @@ const login = useLoginStore()
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  border-radius: 0 0 0 0;
   box-shadow: 0 -2px 32px rgba(0, 0, 0, 0.02);
   overflow-y: auto;
 }
