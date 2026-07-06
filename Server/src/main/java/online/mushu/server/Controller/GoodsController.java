@@ -149,6 +149,25 @@ public class GoodsController {
         return list;
     }
 
+    @GetMapping("/getAllGoods")
+    public List<ReleaseInfVo> getAllGoods() {
+        List<ReleaseInfVo> list = new ArrayList<>();
+        List<ReleaseInf> infs = releaseInfService.getAll();
+        for (ReleaseInf inf : infs) {
+            ReleaseInfVo vo = ReleaseInfVo.builder()
+                    .id(inf.getId())
+                    .GoodsID(inf.getGoods().getId())
+                    .downLoadTime(inf.getDownLoadTime())
+                    .hurryMark(inf.isHurryMark())
+                    .topMark(inf.isTopMark())
+                    .upLoadTime(inf.getUpLoadTime())
+                    .state(inf.getState())
+                    .build();
+            list.add(vo);
+        }
+        return list;
+    }
+
     @GetMapping("/getGoodsInfIsTop")
     public List<ReleaseInfVo> getGoodsInfIsTop() {
         System.out.println("aaaaaaaaaaaa");
