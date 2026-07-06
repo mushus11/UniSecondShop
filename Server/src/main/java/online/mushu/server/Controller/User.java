@@ -71,17 +71,17 @@ public class User {
 
 //可行
     @PostMapping("/changePassword")
-    public String changePassword(@RequestBody ChangePasswordDto dto) {
+    public int changePassword(@RequestBody ChangePasswordDto dto) {
         int id = dto.getId();
         String newPassword = dto.getNewPassword();
 
         online.mushu.server.Entity.User user = userService.getUserById(id);
         if (user == null) {
-            return "未找到用户";
+            return 201;
         }
         user.setPassword(newPassword);
         userService.save(user);
-        return "修改成功";
+        return 200;
     }
 
 //    可行
