@@ -206,8 +206,8 @@ const myOrdersTotal = ref(3)
 // ========== 加载用户信息 ==========
 const loadUserInfo = () => {
   // 从 store 获取用户信息
-  userInfo.id = loginStore.username || '2021001'
-  userInfo.username = loginStore.username || '张三'
+  userInfo.id = loginStore.id || '2021001'
+  userInfo.username = loginStore.id || '张三'
   userInfo.college = '计算机学院'
   userInfo.grade = '大三'
   userInfo.phone = '13800138001'

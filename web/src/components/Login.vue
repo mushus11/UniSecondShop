@@ -1,3 +1,48 @@
+<template>
+  <div class="login-box">
+    <h2 class="login-title">登录</h2>
+
+    <!-- 账号（学号） -->
+    <div class="form-item">
+      <label>学号：</label>
+      <el-input
+          v-model="id"
+          style="width: 240px"
+          placeholder="请输入学号"
+          clearable
+          @keyup.enter="handleKeyEnter"
+      />
+    </div>
+
+    <!-- 密码 -->
+    <div class="form-item">
+      <label>密码：</label>
+      <el-input
+          v-model="password"
+          style="width: 240px"
+          type="password"
+          placeholder="请输入密码（至少6位）"
+          show-password
+          @keyup.enter="handleKeyEnter"
+      />
+    </div>
+
+    <!-- 登录按钮 -->
+    <button
+        @click="handleLogin"
+        class="login-btn"
+        :disabled="btnText === '登录中...'"
+    >
+      {{ btnText }}
+    </button>
+
+    <!-- 跳转到注册 -->
+    <div class="register-link">
+      <RouterLink to="/Sign">还没有账号？立即注册</RouterLink>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
 import { useLoginStore } from "@/store/UseLogin"
@@ -9,18 +54,18 @@ const route = useRoute()
 const loginStore = useLoginStore()
 
 // 使用 storeToRefs 保持响应式
-const { username, password, btnText, IfLogin, usertype, loading } = storeToRefs(loginStore)
+const { id, password, btnText } = storeToRefs(loginStore)
 
 // 登录方法
 const handleLogin = async () => {
   // 1. 验证账号是否为空
-  if (!username.value.trim()) {
+  if (!id.value.trim()) {
     ElMessage.warning('请输入学号')
     return
   }
 
   // 2. 验证学号是否为数字
-  if (!/^\d+$/.test(username.value.trim())) {
+  if (!/^\d+$/.test(id.value.trim())) {
     ElMessage.warning('学号必须为数字')
     return
   }
@@ -52,51 +97,6 @@ const handleKeyEnter = () => {
   handleLogin()
 }
 </script>
-
-<template>
-  <div class="login-box">
-    <h2 class="login-title">登录</h2>
-
-    <!-- 账号（学号） -->
-    <div class="form-item">
-      <label>学号：</label>
-      <el-input
-          v-model="username"
-          style="width: 240px"
-          placeholder="请输入学号"
-          clearable
-          @keyup.enter="handleKeyEnter"
-      />
-    </div>
-
-    <!-- 密码 -->
-    <div class="form-item">
-      <label>密码：</label>
-      <el-input
-          v-model="password"
-          style="width: 240px"
-          type="password"
-          placeholder="请输入密码（至少6位）"
-          show-password
-          @keyup.enter="handleKeyEnter"
-      />
-    </div>
-
-    <!-- 登录按钮 -->
-    <button
-        @click="handleLogin"
-        class="login-btn"
-        :disabled="loading || btnText === '登录中...'"
-    >
-      {{ btnText }}
-    </button>
-
-    <!-- 跳转到注册 -->
-    <div class="register-link">
-      <RouterLink to="/Sign">还没有账号？立即注册</RouterLink>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 /* ========== 登录卡片容器 ========== */
