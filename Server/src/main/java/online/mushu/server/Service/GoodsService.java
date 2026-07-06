@@ -44,6 +44,10 @@ public class GoodsService {
         goodsRepository.save(good);
     }
 
+    public int typeName(int type){
+        return goodsRepository.countByType(type);
+    }
+
     public void deleteGood(String id) {
         goodsRepository.deleteById(id);
     }

@@ -10,13 +10,11 @@ import online.mushu.server.Entity.UserProfile;
 import online.mushu.server.Service.UserProfileService;
 import online.mushu.server.Service.UserService;
 import online.mushu.server.Vo.RegisterVo;
-import online.mushu.server.Vo.ReviseVo;
 import online.mushu.server.Vo.UserInfVo;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * =======
@@ -39,7 +37,7 @@ public class User {
         String password = register.getPassword();
 
         online.mushu.server.Entity.User user = new online.mushu.server.Entity.User(id, username, password);
-        UserProfile userProfile = new UserProfile(id);
+        UserProfile userProfile = new UserProfile(id, user);
         userService.save(user);
         userProfileService.saveUserProfile(userProfile);
         System.out.println("注册成功");
@@ -100,6 +98,7 @@ public class User {
         return UserInfVo.builder()
                 .code(200)
                 .id(userProfile.getID())
+                .name(userProfile.getUser().getUsername())
                 .telephone(userProfile.getTelephone())
                 .profile(userProfile.getProfile())
                 .certified(userProfile.isCertified())
@@ -107,6 +106,33 @@ public class User {
                 .grade(userProfile.getGrade())
                 .image(userProfile.getImage())
                 .build();
+    }
+
+    @GetMapping("/getAllUser")
+    public List<UserInfVo> getAllUser() {
+        List<UserProfile> userProfiles = userProfileService.getAllUserProfiles();
+        List<UserInfVo> vos = new ArrayList<>();
+        for (UserProfile userProfile : userProfiles) {
+            UserInfVo userInfVo = UserInfVo.builder()
+                    .code(200)
+                    .id(userProfile.getID())
+                    .name(userProfile.getUser().getUsername())
+                    .telephone(userProfile.getTelephone())
+                    .profile(userProfile.getProfile())
+                    .certified(userProfile.isCertified())
+                    .college(userProfile.getCollege())
+                    .grade(userProfile.getGrade())
+                    .image(userProfile.getImage())
+                    .build();
+            vos.add(userInfVo);
+        }
+        return vos;
+    }
+
+    @DeleteMapping("/delete")
+    public int delete(@RequestParam(name = "id") int id){
+        userService.delete(id);
+        return 200;
     }
 
 }

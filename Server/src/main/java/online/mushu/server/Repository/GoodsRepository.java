@@ -14,9 +14,13 @@ import java.util.List;
  */
 public interface GoodsRepository extends JpaRepository<Goods, String> {
 
-    @Modifying
+
     @Query("select g from Goods g where g.user.id = :id")
     List<Goods> findByUserID(@Param("id") int id);
+
+
+    @Query("select count(g) from Goods g where g.type = :type")
+    int countByType(@Param("type") int type);
 
     List<Goods> findByType(int type);
 

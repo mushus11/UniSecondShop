@@ -12,9 +12,7 @@ import online.mushu.server.Service.UserService;
 import online.mushu.server.Vo.RecordsVo;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * =======
@@ -32,7 +30,7 @@ public class RecordsController {
     UserService userService;
 
     @PostMapping("/createRecord")
-    public String createRecord(@RequestBody RecordDto dto) {
+    public int createRecord(@RequestBody RecordDto dto) {
         String id = UUID.randomUUID().toString();
         int buyerID = dto.getBuyerID();
         int sellerID = dto.getSellerID();
@@ -44,7 +42,7 @@ public class RecordsController {
         TransactionRecords record = new TransactionRecords(id, buyer, seller, good, dto.getTransactionTime(), dto.getTradingLocation(), good.getPrice(), dto.getNote(), dto.isState());
         transactionRecordsService.saveRecord(record);
 
-        return "success";
+        return 200;
     }
 
     @PostMapping("/changeState")
@@ -141,6 +139,42 @@ public class RecordsController {
             recordsVos.add(vo);
         }
         return recordsVos;
+    }
+
+    @GetMapping("/getSuccessOder")
+    public List<RecordsVo> getSuccessOder(){
+        List<TransactionRecords> list = transactionRecordsService.getSuccess();
+        List<RecordsVo> recordsVos = new ArrayList<>();
+        for (TransactionRecords records : list) {
+            RecordsVo vo = RecordsVo.builder()
+                    .id(records.getId())
+                    .buyerId(records.getBuyer().getId())
+                    .sellerId(records.getSeller().getId())
+                    .goodID(records.getGoods().getId())
+                    .transactionTime(records.getTransactionTime())
+                    .tradingLocation(records.getTradingLocation())
+                    .state(records.isState())
+                    .price(records.getPrice())
+                    .build();
+            recordsVos.add(vo);
+        }
+        return recordsVos;
+    }
+
+    @GetMapping("/getSuccessNum")
+    public int getSuccessNum(){
+        List<TransactionRecords> list = transactionRecordsService.getSuccess();
+        return list.size();
+    }
+
+    @GetMapping("/getHotGoodType")
+    public Map<Integer, Integer> getHotGoodType(){
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < 6; i++) {
+            int num = transactionRecordsService.getSuccessCount(i);
+            map.put(i, num);
+        }
+        return map;
     }
 
     @DeleteMapping("/deleteRecord")

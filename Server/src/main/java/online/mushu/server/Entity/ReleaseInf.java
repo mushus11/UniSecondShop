@@ -22,7 +22,7 @@ public class ReleaseInf {
     @Column(name = "ID", columnDefinition = "CHAR(36)")
     private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "goodID",
             nullable = false,

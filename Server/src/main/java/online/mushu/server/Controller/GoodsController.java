@@ -15,9 +15,7 @@ import online.mushu.server.Vo.ReleaseInfVo;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * =======
@@ -169,6 +167,16 @@ public class GoodsController {
             list.add(vo);
         }
         return list;
+    }
+
+    @GetMapping("/getGoodNumByType")
+    public Map<Integer, Integer> getGoodNumByType() {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < 6; i++) {
+            int num = goodsService.typeName(i);
+            map.put(i, num);
+        }
+        return map;
     }
 
     @DeleteMapping("/delete")

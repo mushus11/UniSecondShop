@@ -54,6 +54,12 @@ public class User {
     )
     private List<TransactionRecords> seller = new ArrayList<>();
 
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private UserProfile userProfile;
 
     public User(int id,String username , String password) {
         setId(id);
