@@ -8,7 +8,8 @@ export const useLoginStore = defineStore('login', {
         return {
             id: '' as string,
             password: '' as string,
-            usertype: 'user' as string,
+            username: '' as string,
+            access: 0 as number,
             btnText: '登录' as string,
             jwt: '' as string,
         }
@@ -20,14 +21,20 @@ export const useLoginStore = defineStore('login', {
                 return false
             }
 
+            const idNum = parseInt(this.id)
+            if (isNaN(idNum)) {
+                ElMessage.warning('学号必须为数字')
+                return false
+            }
+
             this.btnText = '登录中...'
 
             try {
                 const res = await axios({
-                    url: "/api/auth/login",
+                    url: "/api/user/login",
                     method: "post",
                     data: {
-                        id: parseInt(this.id),
+                        id: idNum,
                         password: this.password
                     }
                 })
@@ -36,16 +43,15 @@ export const useLoginStore = defineStore('login', {
 
                 if (res.data.code === 200) {
                     this.jwt = res.data.jwt
+                    this.username = res.data.username || ''
+                    this.access = res.data.access || 0
                     this.btnText = '登录'
                     ElMessage.success('登录成功')
-
-                    // 保存到 localStorage
                     this.saveToLocalStorage()
-
                     return true
                 } else {
                     this.btnText = '登录'
-                    ElMessage.error(res.data.message || '登录失败，请检查学号和密码')
+                    ElMessage.error('登录失败，请检查学号和密码')
                     return false
                 }
 
@@ -57,54 +63,47 @@ export const useLoginStore = defineStore('login', {
             }
         },
 
-        // 保存到 localStorage
         saveToLocalStorage() {
             localStorage.setItem('jwt', this.jwt)
             localStorage.setItem('id', this.id)
-            localStorage.setItem('usertype', this.usertype)
+            localStorage.setItem('username', this.username)
+            localStorage.setItem('access', String(this.access))
         },
 
-        // 从 localStorage 加载
         loadFromLocalStorage() {
             const jwt = localStorage.getItem('jwt')
             const id = localStorage.getItem('id')
-            const usertype = localStorage.getItem('usertype')
+            const username = localStorage.getItem('username')
+            const access = localStorage.getItem('access')
 
-            if (jwt) {
-                this.jwt = jwt
-            }
-            if (id) {
-                this.id = id
-            }
-            if (usertype) {
-                this.usertype = usertype
-            }
+            if (jwt) this.jwt = jwt
+            if (id) this.id = id
+            if (username) this.username = username
+            if (access) this.access = parseInt(access)
         },
 
         logout() {
             this.id = ''
             this.password = ''
-            this.usertype = 'user'
+            this.username = ''
+            this.access = 0
             this.btnText = '登录'
             this.jwt = ''
 
             localStorage.removeItem('jwt')
             localStorage.removeItem('id')
-            localStorage.removeItem('usertype')
+            localStorage.removeItem('username')
+            localStorage.removeItem('access')
         },
 
-        // 检查 JWT 是否为空
         isJwtEmpty(): boolean {
             return !this.jwt || this.jwt.trim() === ''
         }
     },
     getters: {
-        // 获取 JWT
         getJwt(): string {
             return this.jwt
         },
-
-        // 是否已登录（JWT 不为空）
         isLoggedIn(): boolean {
             return this.jwt !== '' && this.jwt !== null && this.jwt !== undefined
         }
