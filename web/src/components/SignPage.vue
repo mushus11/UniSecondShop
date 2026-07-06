@@ -8,7 +8,7 @@ const router = useRouter()
 
 // 注册表单数据
 const registerForm = reactive({
-  username: '',
+  username: 0,
   password: '',
 })
 const UserInformation = reactive({
@@ -48,12 +48,15 @@ async function handleRegister() {
 
 
   const res = await axios({
-    url:"api/auth/register",
+    url:"/api/user/register",
     method:"post",
-    data:registerForm
+    data: {
+      id: registerForm.username,
+      password: registerForm.password
+    }
   })
 
-  if (res.code == 200) {
+  if (res.data.code === 200) {
     ElMessage.success('注册成功！请登录')
     btnText.value = '注册'
     await router.push('/Login')
@@ -92,7 +95,7 @@ async function handleRegister() {
     <div class="form-item">
       <label>确认密码：</label>
       <el-input
-          v-model="registerForm.confirmPassword"
+          v-model="UserInformation.confirmPassword"
           style="width: 240px"
           type="password"
           placeholder="请再次输入密码"
