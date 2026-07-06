@@ -9,6 +9,7 @@ import online.mushu.server.Service.GoodImagesService;
 import online.mushu.server.Service.GoodsService;
 import online.mushu.server.Service.UserProfileService;
 import online.mushu.server.Vo.ImageInfVo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,7 +40,8 @@ public class ImageController {
     @Resource
     UserProfileService userProfileService;
 
-    private final String basePath = "src/main/resources/static/images/";
+    @Value("${image.path}")
+    String basePath;
 
     @PostMapping("/commonImage")
     public int commonImage(@RequestParam(name = "images") List<MultipartFile> images,
@@ -66,7 +68,7 @@ public class ImageController {
                 return 201;
             }
 
-            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getName(), f);
+            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getOriginalFilename(), f);
 
             goodImagesService.saveImage(imageEntity);
         }
@@ -87,7 +89,7 @@ public class ImageController {
             return 201;
         }
 
-        GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getName(), f);
+        GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getOriginalFilename(), f);
         goodImagesService.saveImage(imageEntity);
         return 200;
     }
@@ -119,7 +121,7 @@ public class ImageController {
                 return 201;
             }
 
-            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getName(), f);
+            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getOriginalFilename(), f);
 
             goodImagesService.saveImage(imageEntity);
         }

@@ -1,6 +1,7 @@
 package online.mushu.server.Service;
 
 import jakarta.annotation.Resource;
+import jakarta.transaction.Transactional;
 import online.mushu.server.Entity.GoodImages;
 import online.mushu.server.Repository.GoodImagesRepository;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class GoodImagesService {
         goodImagesRepository.save(goodImages);
     }
 
+    @Transactional
     public void deleteImage(String id) {
         goodImagesRepository.deleteByGoodID(id);
     }

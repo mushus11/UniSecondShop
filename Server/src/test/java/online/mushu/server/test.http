@@ -270,4 +270,64 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxN
 
 GET http://localhost:8080/api/Records/getHotGoodType
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+###
 
+
+POST http://localhost:8080/api/image/postImage
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: multipart/form-data; boundary=myboundary
+
+--myboundary
+Content-Disposition: form-data; name="id"
+
+123
+
+--myboundary
+Content-Disposition: form-data; name="image"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< D:\HONOR Share\test.jpg
+
+--myboundary--
+###
+
+POST http://localhost:8080/api/image/changeImage
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: multipart/form-data; boundary=myboundary
+
+--myboundary
+Content-Disposition: form-data; name="goodID"
+
+1b79ef5a-f1ec-417f-a020-247396e57def
+
+--myboundary
+Content-Disposition: form-data; name="text"
+
+[
+ {
+  "text": "asd",
+  "voucher": true
+ },
+ {
+  "text": "asd",
+  "voucher": true
+ }
+]
+
+--myboundary
+Content-Disposition: form-data; name="images"; filename="0.jpg"
+Content-Type: image/jpeg
+
+< D:\HONOR Share\0.jpg
+
+--myboundary
+Content-Disposition: form-data; name="images"; filename="123.jpg"
+Content-Type: image/jpeg
+
+< D:\HONOR Share\123.jpg
+
+--myboundary--
+###
+
+DELETE http://localhost:8080/api/user/delete?id=123
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
