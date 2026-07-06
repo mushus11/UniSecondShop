@@ -1,120 +1,112 @@
-import {defineStore} from "pinia";
+// store/UseLogin.ts
+import { defineStore } from "pinia";
+import axios from "axios";
+import { ElMessage } from "element-plus";
 
 export const useLoginStore = defineStore('login', {
-    actions: {
-        login() {
-            this.btnText = "登录中..."
-            this.IfLogin = false
-            console.log(this.username, this.password, this.usertype)
-
-            // 模拟登录请求
-            setTimeout(() => {
-                // 假设登录成功
-                this.IfLogin = true
-                this.btnText = "登录"
-
-                // 根据用户类型设置管理员状态
-                this.Ifadmin = this.usertype === 'admin'
-
-                // 保存状态到 localStorage
-                this.saveToLocalStorage()
-            }, 2000)
-        },
-
-        // 退出登录
-        logout() {
-            this.IfLogin = false
-            this.Ifadmin = false
-            this.username = ''
-            this.password = ''
-            this.usertype = 'user'
-            this.btnText = '登录'
-
-            // 清除 localStorage
-            this.clearLocalStorage()
-        },
-
-        // 保存登录和管理员状态到 localStorage
-        saveToLocalStorage() {
-            try {
-                const loginInfo = {
-                    IfLogin: this.IfLogin,
-                    Ifadmin: this.Ifadmin,
-                    usertype: this.usertype,
-                    username: this.username
-                }
-                localStorage.setItem('loginInfo', JSON.stringify(loginInfo))
-            } catch (error) {
-                console.error('保存状态失败:', error)
-            }
-        },
-
-        // 从 localStorage 加载状态
-        loadFromLocalStorage() {
-            try {
-                const saved = localStorage.getItem('loginInfo')
-                if (saved) {
-                    const loginInfo = JSON.parse(saved)
-                    this.IfLogin = loginInfo.IfLogin || false
-                    this.Ifadmin = loginInfo.Ifadmin || false
-                    this.usertype = loginInfo.usertype || 'user'
-                    this.username = loginInfo.username || ''
-                }
-            } catch (error) {
-                console.error('加载状态失败:', error)
-            }
-        },
-
-        // 清除 localStorage
-        clearLocalStorage() {
-            try {
-                localStorage.removeItem('loginInfo')
-            } catch (error) {
-                console.error('清除状态失败:', error)
-            }
-        },
-
-        // 设置管理员状态
-        setAdminStatus(isAdmin: boolean) {
-            this.Ifadmin = isAdmin
-            this.saveToLocalStorage()
-        },
-
-        // 设置登录状态
-        setLoginStatus(isLogin: boolean) {
-            this.IfLogin = isLogin
-            this.saveToLocalStorage()
-        }
-    },
-    getters: {
-        // 获取登录状态
-        getIfLogin(): boolean {
-            return this.IfLogin
-        },
-
-        // 获取管理员状态
-        getIfAdmin(): boolean {
-            return this.Ifadmin
-        },
-
-        // 是否已登录
-        isLoggedIn(): boolean {
-            return this.IfLogin
-        },
-
-        // 是否是管理员
-        isAdmin(): boolean {
-            return this.Ifadmin && this.IfLogin
-        }
-    },
-    state(){
+    state() {
         return {
-            username: '' as string,
+            id: '' as string,
             password: '' as string,
             usertype: 'user' as string,
             btnText: '登录' as string,
-            IfLogin: false as boolean,
-            Ifadmin: false as boolean
+            jwt: '' as string,
+        }
+    },
+    actions: {
+        async login() {
+            if (!this.id || !this.password) {
+                ElMessage.warning('请输入学号和密码')
+                return false
+            }
+
+            this.btnText = '登录中...'
+
+            try {
+                const res = await axios({
+                    url: "/api/auth/login",
+                    method: "post",
+                    data: {
+                        id: parseInt(this.id),
+                        password: this.password
+                    }
+                })
+
+                console.log('登录响应:', res.data)
+
+                if (res.data.code === 200) {
+                    this.jwt = res.data.jwt
+                    this.btnText = '登录'
+                    ElMessage.success('登录成功')
+
+                    // 保存到 localStorage
+                    this.saveToLocalStorage()
+
+                    return true
+                } else {
+                    this.btnText = '登录'
+                    ElMessage.error(res.data.message || '登录失败，请检查学号和密码')
+                    return false
+                }
+
+            } catch (error) {
+                console.error('登录异常:', error)
+                this.btnText = '登录'
+                ElMessage.error('网络异常，请检查网络连接后重试')
+                return false
+            }
+        },
+
+        // 保存到 localStorage
+        saveToLocalStorage() {
+            localStorage.setItem('jwt', this.jwt)
+            localStorage.setItem('id', this.id)
+            localStorage.setItem('usertype', this.usertype)
+        },
+
+        // 从 localStorage 加载
+        loadFromLocalStorage() {
+            const jwt = localStorage.getItem('jwt')
+            const id = localStorage.getItem('id')
+            const usertype = localStorage.getItem('usertype')
+
+            if (jwt) {
+                this.jwt = jwt
+            }
+            if (id) {
+                this.id = id
+            }
+            if (usertype) {
+                this.usertype = usertype
+            }
+        },
+
+        logout() {
+            this.id = ''
+            this.password = ''
+            this.usertype = 'user'
+            this.btnText = '登录'
+            this.jwt = ''
+
+            localStorage.removeItem('jwt')
+            localStorage.removeItem('id')
+            localStorage.removeItem('usertype')
+        },
+
+        // 检查 JWT 是否为空
+        isJwtEmpty(): boolean {
+            return !this.jwt || this.jwt.trim() === ''
+        }
+    },
+    getters: {
+        // 获取 JWT
+        getJwt(): string {
+            return this.jwt
+        },
+
+        // 是否已登录（JWT 不为空）
+        isLoggedIn(): boolean {
+            return this.jwt !== '' && this.jwt !== null && this.jwt !== undefined
         }
     }
 })

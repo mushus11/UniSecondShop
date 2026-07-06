@@ -1,61 +1,14 @@
-<script setup>
-import { useRouter, useRoute } from 'vue-router'
-import { useLoginStore } from "@/store/UseLogin"
-import { ElMessage } from 'element-plus'
-import { storeToRefs } from 'pinia'
-import { watch } from 'vue'
-
-const router = useRouter()
-const route = useRoute()
-const loginStore = useLoginStore()
-
-// 使用 storeToRefs 保持响应式
-const { username, password, btnText, IfLogin, usertype } = storeToRefs(loginStore)
-
-// 监听登录状态变化，自动跳转
-watch(IfLogin, (newVal) => {
-  if (newVal) {
-    ElMessage.success('登录成功！')
-    const redirect = route.query.redirect || '/Home'
-    router.push(redirect)
-  }
-})
-
-// 登录方法
-const handleLogin = () => {
-  // 1. 验证账号是否为空
-  if (!username.value.trim()) {
-    ElMessage.warning('请输入账号')
-    return
-  }
-
-  // 2. 验证密码是否为空
-  if (!password.value) {
-    ElMessage.warning('请输入密码')
-    return
-  }
-
-  // 3. 调用 store 的 login 方法
-  loginStore.login()
-}
-
-// 回车键登录
-const handleKeyEnter = () => {
-  handleLogin()
-}
-</script>
-
 <template>
   <div class="login-box">
     <h2 class="login-title">登录</h2>
 
-    <!-- 账号 -->
+    <!-- 账号（学号） -->
     <div class="form-item">
-      <label>账号：</label>
+      <label>学号：</label>
       <el-input
-          v-model="username"
+          v-model="id"
           style="width: 240px"
-          placeholder="请输入学号/账号"
+          placeholder="请输入学号"
           clearable
           @keyup.enter="handleKeyEnter"
       />
@@ -68,14 +21,18 @@ const handleKeyEnter = () => {
           v-model="password"
           style="width: 240px"
           type="password"
-          placeholder="请输入密码"
+          placeholder="请输入密码（至少6位）"
           show-password
           @keyup.enter="handleKeyEnter"
       />
     </div>
 
     <!-- 登录按钮 -->
-    <button @click="handleLogin" class="login-btn" :disabled="btnText === '登录中...'">
+    <button
+        @click="handleLogin"
+        class="login-btn"
+        :disabled="btnText === '登录中...'"
+    >
       {{ btnText }}
     </button>
 
@@ -85,6 +42,61 @@ const handleKeyEnter = () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { useRouter, useRoute } from 'vue-router'
+import { useLoginStore } from "@/store/UseLogin"
+import { ElMessage } from 'element-plus'
+import { storeToRefs } from 'pinia'
+
+const router = useRouter()
+const route = useRoute()
+const loginStore = useLoginStore()
+
+// 使用 storeToRefs 保持响应式
+const { id, password, btnText } = storeToRefs(loginStore)
+
+// 登录方法
+const handleLogin = async () => {
+  // 1. 验证账号是否为空
+  if (!id.value.trim()) {
+    ElMessage.warning('请输入学号')
+    return
+  }
+
+  // 2. 验证学号是否为数字
+  if (!/^\d+$/.test(id.value.trim())) {
+    ElMessage.warning('学号必须为数字')
+    return
+  }
+
+  // 3. 验证密码是否为空
+  if (!password.value) {
+    ElMessage.warning('请输入密码')
+    return
+  }
+
+  // 4. 验证密码长度
+  if (password.value.length < 6) {
+    ElMessage.warning('密码长度不能少于6位')
+    return
+  }
+
+  // 5. 调用 store 的 login 方法
+  const success = await loginStore.login()
+
+  // 6. 登录成功后跳转
+  if (success) {
+    const redirect = route.query.redirect || '/Home'
+    router.push(redirect)
+  }
+}
+
+// 回车键登录
+const handleKeyEnter = () => {
+  handleLogin()
+}
+</script>
 
 <style scoped>
 /* ========== 登录卡片容器 ========== */
