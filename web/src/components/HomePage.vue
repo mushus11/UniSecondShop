@@ -59,7 +59,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useLoginStore } from '@/store/UseLogin'
 
 const loginStore = useLoginStore()
-const username = ref(loginStore.username || '用户')
+const username = ref(loginStore.id || '用户')
 
 const todayOrders = ref(12)
 const todayProducts = ref(8)
@@ -82,7 +82,7 @@ const latestProducts = ref([
 
 onMounted(() => {
   // 从 store 获取用户名
-  username.value = loginStore.username || '用户'
+  username.value = loginStore.id || '用户'
 })
 </script>
 

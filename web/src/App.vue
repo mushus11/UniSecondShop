@@ -5,7 +5,7 @@ const login = useLoginStore()
 
 <template>
   <div class="nav-wrap">
-    <div class="nav" v-if="login.IfLogin">
+    <div class="nav" v-if="login.jwt">
       <RouterLink to="/Home" class="nav-item">首页</RouterLink>
       <RouterLink to="/Shop" class="nav-item">商城</RouterLink>
       <RouterLink to="/Users" class="nav-item">用户管理</RouterLink>
