@@ -39,6 +39,9 @@ public class GoodImages {
     @Column(name = "text")
     private String text;
 
+    @Column(name = "title")
+    private String title;
+
     @Lob
     @Column(name = "image", columnDefinition = "MEDIUMBLOB")
     private byte[] image;

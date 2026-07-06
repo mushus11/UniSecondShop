@@ -1,6 +1,7 @@
-package online.mushu.server.Dto;
+package online.mushu.server.Vo;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,10 +14,13 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PurchaseDto {
-    private int UserID;
-    private String goodsName;
+@Builder
+public class PurchaseInfVo {
+    private String id;
+    private int userId;
     private int type;
+    private String goodName;
     private String text;
+    private Timestamp purchaseTime;
     private double price;
 }

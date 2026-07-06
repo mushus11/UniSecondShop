@@ -41,7 +41,6 @@ public class GoodsService {
     }
 
     public void updateGood(Goods good) {
-        String id = good.getId();
         goodsRepository.save(good);
     }
 

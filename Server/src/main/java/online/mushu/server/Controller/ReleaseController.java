@@ -3,16 +3,18 @@ package online.mushu.server.Controller;
 import jakarta.annotation.Resource;
 import online.mushu.server.Entity.ReleaseInf;
 import online.mushu.server.Service.ReleaseInfService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import online.mushu.server.Vo.ReleaseInfVo;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * =======
  * =======
  */
+@RestController
 @RequestMapping("/api/Release")
 public class ReleaseController {
 
@@ -20,44 +22,105 @@ public class ReleaseController {
     ReleaseInfService releaseInfService;
 
     @PostMapping("/changeStateUp")
-    public String changeStateUp(@RequestParam(name = "ID") String id) {
+    public int changeStateUp(@RequestParam(name = "ID") String id) {
         ReleaseInf releaseInf = releaseInfService.getReleaseInf(id);
         releaseInf.setState(1);
         releaseInfService.updateReleaseInf(releaseInf);
-        return "success";
+        return 200;
     }
 
     @PostMapping("/changeStateDown")
-    public String changeStateDown(@RequestParam(name = "ID") String id) {
+    public int changeStateDown(@RequestParam(name = "ID") String id) {
         ReleaseInf releaseInf = releaseInfService.getReleaseInf(id);
         releaseInf.setState(2);
         releaseInf.setDownLoadTime(new Timestamp(System.currentTimeMillis()));
         releaseInfService.updateReleaseInf(releaseInf);
-        return "success";
+        return 200;
     }
 
     @PostMapping("/changeStateOut")
-    public String changeStateOut(@RequestParam(name = "ID") String id) {
+    public int changeStateOut(@RequestParam(name = "ID") String id) {
         ReleaseInf releaseInf = releaseInfService.getReleaseInf(id);
         releaseInf.setState(3);
         releaseInfService.updateReleaseInf(releaseInf);
-        return "success";
+        return 200;
     }
 
     @PostMapping("/changeHurry")
-    public String changeHurry(@RequestParam(name = "ID") String id) {
+    public int changeHurry(@RequestParam(name = "ID") String id) {
         ReleaseInf releaseInf = releaseInfService.getReleaseInf(id);
         releaseInf.setHurryMark(!releaseInf.isHurryMark());
         releaseInfService.updateReleaseInf(releaseInf);
-        return "success";
+        return 200;
     }
     @PostMapping("/changeTop")
-    public String changeTop(@RequestParam(name = "ID") String id) {
+    public int changeTop(@RequestParam(name = "ID") String id) {
         ReleaseInf releaseInf = releaseInfService.getReleaseInf(id);
         releaseInf.setTopMark(!releaseInf.isTopMark());
         releaseInfService.updateReleaseInf(releaseInf);
-        return "success";
+        return 200;
     }
 
+    @GetMapping("/getGoodsState")
+    public int getGoodsState(@RequestParam(name = "ID") String id) {
+        ReleaseInf releaseInf = releaseInfService.getReleaseInf(id);
+        return releaseInf.getState();
+    }
 
+    @GetMapping("/getUpGoods")
+    public List<ReleaseInfVo> getUpGoods() {
+        List<ReleaseInfVo> list = new ArrayList<>();
+        List<ReleaseInf> infs = releaseInfService.getByState(1);
+        for (ReleaseInf inf : infs) {
+            ReleaseInfVo vo = ReleaseInfVo.builder()
+                    .id(inf.getId())
+                    .GoodsID(inf.getGoods().getId())
+                    .downLoadTime(inf.getDownLoadTime())
+                    .hurryMark(inf.isHurryMark())
+                    .topMark(inf.isTopMark())
+                    .upLoadTime(inf.getUpLoadTime())
+                    .state(inf.getState())
+                    .build();
+            list.add(vo);
+        }
+        return list;
+    }
+
+    @GetMapping("/getDownGoods")
+    public List<ReleaseInfVo> getDownGoods() {
+        List<ReleaseInfVo> list = new ArrayList<>();
+        List<ReleaseInf> infs = releaseInfService.getByState(2);
+        for (ReleaseInf inf : infs) {
+            ReleaseInfVo vo = ReleaseInfVo.builder()
+                    .id(inf.getId())
+                    .GoodsID(inf.getGoods().getId())
+                    .downLoadTime(inf.getDownLoadTime())
+                    .hurryMark(inf.isHurryMark())
+                    .topMark(inf.isTopMark())
+                    .upLoadTime(inf.getUpLoadTime())
+                    .state(inf.getState())
+                    .build();
+            list.add(vo);
+        }
+        return list;
+    }
+
+    @GetMapping("/getOutGoods")
+    public List<ReleaseInfVo> getOutGoods() {
+        List<ReleaseInfVo> list = new ArrayList<>();
+        List<ReleaseInf> infs = releaseInfService.getByState(3);
+        for (ReleaseInf inf : infs) {
+            ReleaseInfVo vo = ReleaseInfVo.builder()
+                    .id(inf.getId())
+                    .GoodsID(inf.getGoods().getId())
+                    .downLoadTime(inf.getDownLoadTime())
+                    .hurryMark(inf.isHurryMark())
+                    .topMark(inf.isTopMark())
+                    .upLoadTime(inf.getUpLoadTime())
+                    .state(inf.getState())
+                    .build();
+            list.add(vo);
+        }
+        return list;
+    }
 }

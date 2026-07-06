@@ -38,7 +38,8 @@ public class ReleaseInfService {
         releaseInfRepository.save(releaseInf);
     }
 
-    public void deleteReleaseInf(String id) {}
-
+    public List<ReleaseInf> getByState(int state) {
+        return releaseInfRepository.findByState(state);
+    }
 
 }

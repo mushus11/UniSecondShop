@@ -8,6 +8,7 @@ import online.mushu.server.Entity.UserProfile;
 import online.mushu.server.Service.GoodImagesService;
 import online.mushu.server.Service.GoodsService;
 import online.mushu.server.Service.UserProfileService;
+import online.mushu.server.Vo.ImageInfVo;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,14 +42,14 @@ public class ImageController {
     private final String basePath = "src/main/resources/static/images/";
 
     @PostMapping("/commonImage")
-    public String commonImage(@RequestParam(name = "images") List<MultipartFile> images,
+    public int commonImage(@RequestParam(name = "images") List<MultipartFile> images,
                               @RequestParam(name = "text") String texts,
                               @RequestParam(name = "goodID") String id) {
 
         List<ImageInfDto> dtos = new ObjectMapper().readValue(texts, new TypeReference<List<ImageInfDto>>(){});
 
         if (images.size() != dtos.size()) {
-            return "error";
+            return 201;
         }
 
         Goods good = goodsService.getGoodsByID(id);
@@ -62,19 +63,19 @@ public class ImageController {
             try {
                 f = image.getBytes();
             } catch (IOException e) {
-                return "failues";
+                return 201;
             }
 
-            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), f);
+            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getName(), f);
 
             goodImagesService.saveImage(imageEntity);
         }
 
-        return "success";
+        return 200;
     }
 
     @PostMapping("/voucherImage")
-    public String voucherImage(@RequestParam(name = "image") MultipartFile image,
+    public int voucherImage(@RequestParam(name = "image") MultipartFile image,
                                @RequestParam(name = "text") String text,
                                @RequestParam(name = "goodID") String imageID) {
         Goods good = goodsService.getGoodsByID(imageID);
@@ -83,16 +84,16 @@ public class ImageController {
         try {
             f = image.getBytes();
         } catch (IOException e) {
-            return "failues";
+            return 201;
         }
 
-        GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), f);
+        GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getName(), f);
         goodImagesService.saveImage(imageEntity);
-        return "success";
+        return 200;
     }
 
     @PostMapping("/changeImage")
-    public String changeImage(@RequestParam(name = "images") List<MultipartFile> images,
+    public int changeImage(@RequestParam(name = "images") List<MultipartFile> images,
                               @RequestParam(name = "text") String texts,
                               @RequestParam(name = "goodID") String id) {
 
@@ -101,7 +102,7 @@ public class ImageController {
         List<ImageInfDto> dtos = new ObjectMapper().readValue(texts, new TypeReference<List<ImageInfDto>>(){});
 
         if (images.size() != dtos.size()) {
-            return "error";
+            return 201;
         }
 
         Goods good = goodsService.getGoodsByID(id);
@@ -115,15 +116,15 @@ public class ImageController {
             try {
                 f = image.getBytes();
             } catch (IOException e) {
-                return "failues";
+                return 201;
             }
 
-            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), f);
+            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getName(), f);
 
             goodImagesService.saveImage(imageEntity);
         }
 
-        return "success";
+        return 200;
     }
 
     @PostMapping("/postImage")
@@ -163,7 +164,7 @@ public class ImageController {
         return images;
     }
 
-    @GetMapping("/getImages/{imageID}")
+    @GetMapping("/getImage/{imageID}")
     public ResponseEntity<byte[]> getImage(@PathVariable("imageID") String imageID) {
         GoodImages image = goodImagesService.getImage(imageID);
         byte[] data = image.getImage();
@@ -175,8 +176,12 @@ public class ImageController {
     }
 
     @GetMapping("/getImageText/{imageID}")
-    public String getImageText(@PathVariable("imageID") String imageID) {
+    public ImageInfVo getImageText(@PathVariable("imageID") String imageID) {
         GoodImages image = goodImagesService.getImage(imageID);
-        return image.getText();
+        return ImageInfVo.builder()
+                .text(image.getText())
+                .voucher(image.isVoucher())
+                .title(image.getTitle())
+                .build();
     }
 }

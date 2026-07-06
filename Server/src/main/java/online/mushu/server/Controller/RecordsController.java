@@ -18,7 +18,8 @@ import java.util.UUID;
  * =======
  * =======
  */
-@RequestMapping("/api/records")
+@RestController
+@RequestMapping("/api/Records")
 public class RecordsController {
 
     @Resource

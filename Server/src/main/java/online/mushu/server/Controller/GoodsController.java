@@ -59,6 +59,17 @@ public class GoodsController {
         return 200;
     }
 
+    @PostMapping("/sellGood")
+    public int sellGood(@RequestParam(name = "goodID") String id) {
+        Goods good = goodsService.getGoodsByID(id);
+        good.setState(true);
+        goodsService.updateGood(good);
+        ReleaseInf inf = releaseInfService.getReleaseInf(id);
+        inf.setState(3);
+        releaseInfService.saveReleaseInf(inf);
+        return 200;
+    }
+
 //    可行
 //    查找单个商品
     @GetMapping("/getGoodInf")
@@ -104,7 +115,7 @@ public class GoodsController {
     public List<GetGoodsInfVo> getGoodsInfByType(@RequestBody GetGoodsInfDto dto) {
         int type = dto.getType();
         List<GetGoodsInfVo> list = new ArrayList<>();
-        List<Goods> goods = goodsService.getGoods(type);
+        List<Goods> goods = goodsService.getGoodsByType(type);
         for (Goods good : goods) {
             GetGoodsInfVo vo = GetGoodsInfVo.builder()
                     .id(good.getId())
@@ -144,7 +155,7 @@ public class GoodsController {
     public List<ReleaseInfVo> getGoodsInfIsTop() {
         System.out.println("aaaaaaaaaaaa");
         List<ReleaseInfVo> list = new ArrayList<>();
-        List<ReleaseInf> infs = releaseInfService.getHurry();
+        List<ReleaseInf> infs = releaseInfService.getTop();
         for (ReleaseInf inf : infs) {
             ReleaseInfVo vo = ReleaseInfVo.builder()
                     .id(inf.getId())
