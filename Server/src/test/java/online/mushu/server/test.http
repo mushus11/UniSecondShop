@@ -257,3 +257,4 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxN
 
 DELETE http://localhost:8080/api/Records/deleteRecord?ID=59a6b3cc-ddca-41ab-a56c-70705775e2f7
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+

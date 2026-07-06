@@ -81,7 +81,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(conf -> conf
                         .requestMatchers("/", "/favicon.ico", "/static/*").permitAll()
                         .requestMatchers("/api/user/login").permitAll()//表示将所有 /api/auth/login 到来的数据都放行
-                        .requestMatchers("/api/user/register").permitAll()//表示注册的路径放行
+                        .requestMatchers("/api/user/register", "/api/user/changePassword").permitAll()//表示注册的路径放行
                         .anyRequest().authenticated()
                 )
 

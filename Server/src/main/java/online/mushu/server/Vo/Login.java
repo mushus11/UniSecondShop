@@ -28,7 +28,7 @@ enum LICoda {
 
 }
 
-public record Login(String username, int ID, int access, int coda, String JWT) {
+public record Login(String username, int ID, int access, int code, String JWT) {
 
     public String asJsonString() {
         return JSONUtils.toJSON(this);
