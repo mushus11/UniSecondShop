@@ -68,7 +68,7 @@ public class ImageController {
                 return 201;
             }
 
-            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getName(), f);
+            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getOriginalFilename(), f);
 
             goodImagesService.saveImage(imageEntity);
         }
@@ -89,7 +89,7 @@ public class ImageController {
             return 201;
         }
 
-        GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getName(), f);
+        GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getOriginalFilename(), f);
         goodImagesService.saveImage(imageEntity);
         return 200;
     }
@@ -121,7 +121,7 @@ public class ImageController {
                 return 201;
             }
 
-            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getName(), f);
+            GoodImages imageEntity = new GoodImages(imageID, good, dto.isVoucher(), dto.getText(), image.getOriginalFilename(), f);
 
             goodImagesService.saveImage(imageEntity);
         }
