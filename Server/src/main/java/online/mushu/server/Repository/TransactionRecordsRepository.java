@@ -27,5 +27,10 @@ public interface TransactionRecordsRepository extends JpaRepository<TransactionR
     @Query("select tr from TransactionRecords tr where tr.buyer.id = :buyerID")
     List<TransactionRecords> findByBuyerID(@Param("buyerID") int buyerID);
 
+    @Query("select count(tr) from TransactionRecords tr where tr.goods.type=:type and tr.state")
+    int countBySellAndType(@Param("type") int type);
+
+    List<TransactionRecords> findByStateTrue();
+
 
 }

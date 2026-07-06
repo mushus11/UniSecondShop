@@ -5,6 +5,8 @@ import online.mushu.server.Entity.UserProfile;
 import online.mushu.server.Repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * =======
  * =======
@@ -24,5 +26,9 @@ public class UserProfileService {
 
     public UserProfile saveUserProfile(UserProfile userProfile) {
         return userProfileRepository.save(userProfile);
+    }
+
+    public List<UserProfile> getAllUserProfiles() {
+        return userProfileRepository.findAll();
     }
 }

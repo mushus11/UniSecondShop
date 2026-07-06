@@ -45,4 +45,12 @@ public class TransactionRecordsService {
     public void delete(String id) {
         transactionRecordsRepository.deleteById(id);
     }
+
+    public List<TransactionRecords> getSuccess() {
+        return transactionRecordsRepository.findByStateTrue();
+    }
+
+    public int getSuccessCount(int type) {
+        return transactionRecordsRepository.countBySellAndType(type);
+    }
 }

@@ -37,8 +37,21 @@ public class UserProfile {
     @Column(name = "image")
     private String image;
 
-    public UserProfile(int id) {
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "userID",
+            nullable = false,
+            foreignKey = @ForeignKey(
+                    name = "fk_profile_user",
+                    value = ConstraintMode.PROVIDER_DEFAULT,
+                    foreignKeyDefinition = "FOREIGN KEY (userID) REFERENCES User(ID) "
+            )
+    )
+    private User user;
+
+    public UserProfile(int id, User user) {
         setID(id);
+        setUser(user);
     }
 
 }

@@ -40,12 +40,12 @@ public class Goods {
     )
     private List<GoodImages> images = new ArrayList<>();
 
-    @OneToMany(
+    @OneToOne(
             mappedBy = "goods",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<ReleaseInf> releasesInfList = new ArrayList<>();
+    private ReleaseInf releasesInf;
 
     @OneToMany(
             mappedBy = "goods",

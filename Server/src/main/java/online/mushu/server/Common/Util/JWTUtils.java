@@ -8,10 +8,10 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import jakarta.annotation.Resource;
-import online.mushu.server.Common.Enums.Cost;
+
 import online.mushu.server.Security.UserIdDetail;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
+
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+
 
 
 /**
@@ -33,8 +33,7 @@ public class JWTUtils {
 //    @Value("${jwt.sign}")
     String sign = "123456";
 
-    @Resource
-    StringRedisTemplate stringRedisTemplate;
+
     // 用于连接Redis数据库
 
 
@@ -109,19 +108,21 @@ public class JWTUtils {
 
 //    判断JWT是否失效
     private boolean isInvalid(String uuid) {
-        return Boolean.TRUE.equals(stringRedisTemplate.hasKey(Cost.JWT_BLACKLIST + uuid));
+//        return Boolean.TRUE.equals(stringRedisTemplate.hasKey(Cost.JWT_BLACKLIST + uuid));
+        return false;
     }
 
 //    拉黑JWT
     private boolean deleteJWT(String token) {
-        String uuid = JWT.decode(token).getId();
-        if (this.isInvalid(uuid)) return false;
-        if (this.isExpired(token))
-            stringRedisTemplate.opsForValue().set(Cost.JWT_BLACKLIST + uuid, "", 0, TimeUnit.MILLISECONDS);
-        else {
-            long time = JWT.decode(token).getExpiresAt().getTime() - new Date().getTime();
-            stringRedisTemplate.opsForValue().set(Cost.JWT_BLACKLIST + uuid, "", time, TimeUnit.MILLISECONDS);
-        }
+//        String uuid = JWT.decode(token).getId();
+//        if (this.isInvalid(uuid)) return false;
+//        if (this.isExpired(token))
+//            stringRedisTemplate.opsForValue().set(Cost.JWT_BLACKLIST + uuid, "", 0, TimeUnit.MILLISECONDS);
+//        else {
+//            long time = JWT.decode(token).getExpiresAt().getTime() - new Date().getTime();
+//            stringRedisTemplate.opsForValue().set(Cost.JWT_BLACKLIST + uuid, "", time, TimeUnit.MILLISECONDS);
+//        }
+//        return true;
         return true;
     }
 }

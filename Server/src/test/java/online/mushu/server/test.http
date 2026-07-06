@@ -11,7 +11,7 @@ POST http://localhost:8080/api/user/register
 Content-Type: application/json
 
 {
-  "id": 0,
+  "id": 123,
   "password": "123456"
 }
 ###
@@ -50,6 +50,11 @@ Content-Type: application/json
 }
 ###
 
+GET http://localhost:8080/api/user/getAllUser
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+
+###
+
 POST http://localhost:8080/api/goods/uploadGoodInf
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
 Content-Type: application/json
@@ -84,7 +89,7 @@ Content-Type: application/json
 
 {
   "userID": 0,
-  "goodID": "a5abeac7-8434-4b9c-8ce1-c3a139ead104",
+  "goodID": "1b79ef5a-f1ec-417f-a020-247396e57def",
   "type": 0
 }
 ###
@@ -112,6 +117,10 @@ Content-Type: application/json
 ###
 
 GET http://localhost:8080/api/goods/getGoodsInfIsHarry
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+###
+
+GET http://localhost:8080/api/goods/getGoodNumByType
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
 ###
 
@@ -208,7 +217,7 @@ Content-Type: application/json
 {
   "sellerID": 0,
   "buyerID": 123,
-  "goodID": "a5abeac7-8434-4b9c-8ce1-c3a139ead104",
+  "goodID": "1f4a60df-be5b-4c53-9bd5-14ac8f605b7d",
   "price": 2.2,
   "tradingLocation": "",
   "note": "好",
@@ -232,7 +241,7 @@ Content-Type: application/json
 {
   "sellerID": 0,
   "buyerID": 123,
-  "goodID": "a5abeac7-8434-4b9c-8ce1-c3a139ead104",
+  "goodID": "1f4a60df-be5b-4c53-9bd5-14ac8f605b7d",
   "price": 10.2,
   "tradingLocation": "",
   "note": "好",
@@ -256,5 +265,9 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxN
 ###
 
 DELETE http://localhost:8080/api/Records/deleteRecord?ID=59a6b3cc-ddca-41ab-a56c-70705775e2f7
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+###
+
+GET http://localhost:8080/api/Records/getHotGoodType
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
 

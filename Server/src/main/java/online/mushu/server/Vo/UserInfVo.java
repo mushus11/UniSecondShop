@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class UserInfVo {
     private int code;
     private int id;
+    private String name;
     private String college;
     private String grade;
     private String telephone;
