@@ -6,11 +6,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import online.mushu.server.Common.Util.JWTUtils;
+import online.mushu.server.Entity.UserProfile;
 import online.mushu.server.Filter.JSONUsernamePasswordFilter;
 import online.mushu.server.Filter.JWTAuthorizeFilter;
 import online.mushu.server.Security.UserIDAuthenticationToken;
 import online.mushu.server.Security.UserIDProvider;
 import online.mushu.server.Security.UserIdDetail;
+import online.mushu.server.Service.UserProfileService;
 import online.mushu.server.Service.UserService;
 import online.mushu.server.Vo.Login;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +49,9 @@ public class SecurityConfiguration {
     @Resource
     private UserService userService;
 
+    @Resource
+    private UserProfileService userProfileService;
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
         return config.getAuthenticationManager();
@@ -63,7 +68,7 @@ public class SecurityConfiguration {
         JSONUsernamePasswordFilter filter = new JSONUsernamePasswordFilter(authManager);
         filter.setAuthenticationSuccessHandler(this::onAuthenticationSuccess);
         filter.setAuthenticationFailureHandler(this::onAuthenticationFailure);
-        filter.setFilterProcessesUrl("/api/auth/login");
+        filter.setFilterProcessesUrl("/api/user/login");
         return filter;
     }
 
@@ -74,7 +79,8 @@ public class SecurityConfiguration {
 
 //                除登陆意外所有请求都需验证
                 .authorizeHttpRequests(conf -> conf
-                        .requestMatchers("/api/auth/login").permitAll()//表示将所有 /api/auth/login 到来的数据都放行
+                        .requestMatchers("/", "/favicon.ico", "/static/*").permitAll()
+                        .requestMatchers("/api/user/login").permitAll()//表示将所有 /api/auth/login 到来的数据都放行
                         .requestMatchers("/api/user/register").permitAll()//表示注册的路径放行
                         .anyRequest().authenticated()
                 )
@@ -108,7 +114,10 @@ public class SecurityConfiguration {
 
 //        将令牌发放给前端
         response.setContentType("application/json; charset=utf-8");
-        response.getWriter().write(Login.Success(user.getUsername(), user.getId(), jwt).asJsonString());
+
+        UserProfile profile = userProfileService.getUserProfile(user.getId());
+
+        response.getWriter().write(Login.Success(user.getUsername(), profile.getID(), user.getId(), jwt).asJsonString());
     }
 
     public void onAuthenticationFailure(HttpServletRequest request,

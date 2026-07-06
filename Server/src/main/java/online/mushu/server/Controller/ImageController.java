@@ -27,7 +27,7 @@ import java.util.UUID;
  * =======
  * =======
  */
-
+@RestController
 @RequestMapping("/api/image")
 public class ImageController {
 
@@ -127,7 +127,7 @@ public class ImageController {
     }
 
     @PostMapping("/postImage")
-    public String postImage(@RequestParam("image") MultipartFile file, @RequestParam int id) {
+    public String postImage(@RequestParam("image") MultipartFile file, @RequestParam(name = "id") int id) {
 
         if (file.isEmpty()) {
             return "请上传图片";

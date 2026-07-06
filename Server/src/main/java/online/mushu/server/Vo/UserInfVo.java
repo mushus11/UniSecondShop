@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UserInfVo {
+    private int code;
     private int id;
     private String college;
     private String grade;

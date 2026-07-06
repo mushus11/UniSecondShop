@@ -48,7 +48,7 @@ public class User {
     }
 
     @PostMapping("/reviseBaseInf")
-    public ReviseVo revise(@RequestBody ReviseDto dto) {
+    public int revise(@RequestBody ReviseDto dto) {
         int id = dto.getId();
         String college = dto.getCollege();
         String grade = dto.getGrade();
@@ -61,12 +61,15 @@ public class User {
         userProfile.setGrade(grade);
         userProfile.setTelephone(telephone);
         userProfile.setProfile(profile);
-
         userProfileService.saveUserProfile(userProfile);
+
+        online.mushu.server.Entity.User user = userService.getUserById(id);
+        user.setUsername(dto.getName());
+        userService.save(user);
 
         System.out.println("信息修改成功");
 
-        return new ReviseVo(id, college, grade, telephone, profile, certified);
+        return 200;
     }
 
 //可行
@@ -89,7 +92,13 @@ public class User {
     public UserInfVo getUserInf(@RequestBody UserInfDto dto) {
         int id = dto.getId();
         UserProfile userProfile = userProfileService.getUserProfile(id);
+        if (userProfile == null) {
+            return UserInfVo.builder()
+                    .code(201)
+                    .build();
+        }
         return UserInfVo.builder()
+                .code(200)
                 .id(userProfile.getID())
                 .telephone(userProfile.getTelephone())
                 .profile(userProfile.getProfile())

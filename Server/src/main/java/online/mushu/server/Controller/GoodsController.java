@@ -51,11 +51,11 @@ public class GoodsController {
 
 //    可行
     @PostMapping("/changeGoodInf")
-    public String changeGoodInf(@RequestBody GoodDto dto, @RequestParam(name = "goodID") String goodID) {
+    public int changeGoodInf(@RequestBody GoodDto dto, @RequestParam(name = "goodID") String goodID) {
         User user = userService.getUserById(dto.getUserId());
         Goods good = new Goods(goodID, user, dto.getName(), dto.getType(), dto.getPrice(), dto.getText(), dto.isState());
         goodsService.updateGood(good);
-        return "success";
+        return 200;
     }
 
 //    可行

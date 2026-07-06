@@ -1,9 +1,9 @@
-POST http://localhost:8080/api/auth/login
+POST http://localhost:8080/api/user/login
 Content-Type: application/json
 
 {
   "id": 0,
-  "password": "123456"
+  "password": "12345678"
 }
 ###
 
@@ -22,6 +22,7 @@ Content-Type: application/json
 
 {
   "id": 0,
+  "name": "asd",
   "certified": false,
   "college": "",
   "grade": "",

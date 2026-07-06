@@ -28,21 +28,21 @@ enum LICoda {
 
 }
 
-public record Login(String username, int ID, int coda, String JWT) {
+public record Login(String username, int ID, int access, int coda, String JWT) {
 
     public String asJsonString() {
         return JSONUtils.toJSON(this);
     }
 
-    public static Login Success(String username, int ID, String JWT) {
-        return new Login(username, ID, LICoda.Success.getCode() , JWT);
+    public static Login Success(String username, int access, int ID, String JWT) {
+        return new Login(username, ID, access, LICoda.Success.getCode() , JWT);
     }
 
     public static Login Failure() {
-        return new Login("", 0, LICoda.Failure.getCode(), "");
+        return new Login("", 0, 0, LICoda.Failure.getCode(), "");
     }
 
     public static Login FailureRequest(String username, int ID) {
-        return new Login(username, ID, LICoda.FailureRequest.getCode(), null);
+        return new Login(username, ID, 0, LICoda.FailureRequest.getCode(), null);
     }
 }
