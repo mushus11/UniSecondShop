@@ -15,4 +15,6 @@ public interface ReleaseInfRepository extends JpaRepository<ReleaseInf, String> 
 
     List<ReleaseInf> findByTopMarkTrue();
 
+    List<ReleaseInf> findByState(int state);
+
 }

@@ -1,10 +1,9 @@
-package online.mushu.server.Dto;
+package online.mushu.server.Vo;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
 
 /**
  * =======
@@ -13,10 +12,9 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PurchaseDto {
-    private int UserID;
-    private String goodsName;
-    private int type;
+@Builder
+public class ImageInfVo {
     private String text;
-    private double price;
+    private boolean voucher;
+    private String title;
 }

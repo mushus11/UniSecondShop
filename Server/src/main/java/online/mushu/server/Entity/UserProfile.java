@@ -31,6 +31,8 @@ public class UserProfile {
     private String profile;
     @Column(name = "certified", columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
     private boolean certified;
+    @Column(name = "access")
+    private String access;
     @Lob
     @Column(name = "image")
     private String image;
