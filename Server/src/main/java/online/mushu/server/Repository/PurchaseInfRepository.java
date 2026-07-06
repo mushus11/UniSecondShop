@@ -16,7 +16,7 @@ public interface PurchaseInfRepository extends JpaRepository<PurchaseInf, String
     List<PurchaseInf> findAllByType(int type);
 
     @Modifying
-    @Query("delete from PurchaseInf pi where pi.user.id = :id")
+    @Query("select pi from PurchaseInf pi where pi.user.id = :id")
     List<PurchaseInf> findByUserID(int id);
 
 }

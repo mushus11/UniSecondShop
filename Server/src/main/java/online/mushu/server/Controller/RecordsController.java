@@ -9,8 +9,10 @@ import online.mushu.server.Entity.User;
 import online.mushu.server.Service.GoodsService;
 import online.mushu.server.Service.TransactionRecordsService;
 import online.mushu.server.Service.UserService;
+import online.mushu.server.Vo.RecordsVo;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,39 +48,105 @@ public class RecordsController {
     }
 
     @PostMapping("/changeState")
-    public String changeState(@RequestBody ChangeRecordDto dto){
+    public int changeState(@RequestBody ChangeRecordDto dto){
         String id = dto.getId();
         TransactionRecords record = transactionRecordsService.getRecord(id);
         record.setState(!record.isState());
-        transactionRecordsService.updateRecord(id, record);
-        return "success";
+        transactionRecordsService.updateRecord(record);
+        return 200;
     }
 
     @PostMapping("/changeRecord")
-    public String changeRecord(@RequestBody RecordDto dto, @RequestParam(name = "ID") String id){
+    public int changeRecord(@RequestBody RecordDto dto, @RequestParam(name = "ID") String id){
         TransactionRecords record = transactionRecordsService.getRecord(id);
         record.setNote(dto.getNote());
         record.setPrice(dto.getPrice());
         record.setTradingLocation(dto.getTradingLocation());
         record.setTransactionTime(dto.getTransactionTime());
-        transactionRecordsService.updateRecord(id, record);
-        return "success";
+        transactionRecordsService.updateRecord(record);
+        return 200;
     }
 
     @GetMapping("/getRecordByUserID")
-    public List<TransactionRecords> getRecordByUserID(@RequestParam(name = "ID") int id){
-        return transactionRecordsService.getRecordsByUserID(id);
+    public List<RecordsVo> getRecordByUserID(@RequestParam(name = "ID") int id){
+        List<TransactionRecords> list = transactionRecordsService.getRecordsByUserID(id);
+        List<RecordsVo> recordsVos = new ArrayList<>();
+        for (TransactionRecords records : list) {
+            RecordsVo vo = RecordsVo.builder()
+                    .id(records.getId())
+                    .buyerId(records.getBuyer().getId())
+                    .sellerId(records.getSeller().getId())
+                    .goodID(records.getGoods().getId())
+                    .transactionTime(records.getTransactionTime())
+                    .tradingLocation(records.getTradingLocation())
+                    .state(records.isState())
+                    .price(records.getPrice())
+                    .build();
+            recordsVos.add(vo);
+        }
+        return recordsVos;
     }
 
     @GetMapping("/getRecordByID")
-    public TransactionRecords getRecordByID(@RequestParam(name = "ID") String id){
-        return transactionRecordsService.getRecord(id);
+    public RecordsVo getRecordByID(@RequestParam(name = "ID") String id){
+        TransactionRecords records = transactionRecordsService.getRecord(id);
+        return RecordsVo.builder()
+                .id(records.getId())
+                .buyerId(records.getBuyer().getId())
+                .sellerId(records.getSeller().getId())
+                .goodID(records.getGoods().getId())
+                .transactionTime(records.getTransactionTime())
+                .tradingLocation(records.getTradingLocation())
+                .state(records.isState())
+                .price(records.getPrice())
+                .node(records.getNote())
+                .build();
+    }
+
+    @GetMapping("/getRecordBySellerID")
+    public List<RecordsVo> getRecordBySellerID(@RequestParam(name = "ID") int id){
+        List<TransactionRecords> list = transactionRecordsService.getRecordsBySellerID(id);
+        List<RecordsVo> recordsVos = new ArrayList<>();
+        for (TransactionRecords records : list) {
+            RecordsVo vo = RecordsVo.builder()
+                    .id(records.getId())
+                    .buyerId(records.getBuyer().getId())
+                    .sellerId(records.getSeller().getId())
+                    .goodID(records.getGoods().getId())
+                    .transactionTime(records.getTransactionTime())
+                    .tradingLocation(records.getTradingLocation())
+                    .state(records.isState())
+                    .price(records.getPrice())
+                    .build();
+            recordsVos.add(vo);
+        }
+        return recordsVos;
+    }
+
+    @GetMapping("/getRecordByBuyerID")
+    public List<RecordsVo> getRecordByBuyerID(@RequestParam(name = "ID") int id){
+        List<TransactionRecords> list = transactionRecordsService.getRecordsByBuyerID(id);
+        List<RecordsVo> recordsVos = new ArrayList<>();
+        for (TransactionRecords records : list) {
+            RecordsVo vo = RecordsVo.builder()
+                    .id(records.getId())
+                    .buyerId(records.getBuyer().getId())
+                    .sellerId(records.getSeller().getId())
+                    .goodID(records.getGoods().getId())
+                    .transactionTime(records.getTransactionTime())
+                    .tradingLocation(records.getTradingLocation())
+                    .state(records.isState())
+                    .price(records.getPrice())
+                    .build();
+            recordsVos.add(vo);
+        }
+        return recordsVos;
     }
 
     @DeleteMapping("/deleteRecord")
-    public String deleteRecord(@RequestParam(name = "ID") String id){
+    public int deleteRecord(@RequestParam(name = "ID") String id){
         transactionRecordsService.delete(id);
-        return "success";
+        return 200;
     }
 
 }

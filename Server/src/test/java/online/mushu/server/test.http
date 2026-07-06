@@ -191,3 +191,69 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxN
 
 GET http://localhost:8080/api/Purchase/getPurchaseByUserID?userID=0
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+###
+
+GET http://localhost:8080/api/Purchase/getPurchaseByID?id=9b42d710-fe61-47ad-ac3e-bb03a9a7050a
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+###
+
+DELETE http://localhost:8080/api/Purchase/delete?id=9b42d710-fe61-47ad-ac3e-bb03a9a7050a
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+###
+
+POST http://localhost:8080/api/Records/createRecord
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+  "sellerID": 0,
+  "buyerID": 123,
+  "goodID": "a5abeac7-8434-4b9c-8ce1-c3a139ead104",
+  "price": 2.2,
+  "tradingLocation": "",
+  "note": "好",
+  "state": false
+}
+###
+
+POST http://localhost:8080/api/Records/changeState
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+  "id": "59a6b3cc-ddca-41ab-a56c-70705775e2f7"
+}
+###
+
+POST http://localhost:8080/api/Records/changeRecord?ID=59a6b3cc-ddca-41ab-a56c-70705775e2f7
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+Content-Type: application/json
+
+{
+  "sellerID": 0,
+  "buyerID": 123,
+  "goodID": "a5abeac7-8434-4b9c-8ce1-c3a139ead104",
+  "price": 10.2,
+  "tradingLocation": "",
+  "note": "好",
+  "state": false
+}
+###
+GET http://localhost:8080/api/Records/getRecordByUserID?ID=0
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+###
+
+GET http://localhost:8080/api/Records/getRecordByID?ID=59a6b3cc-ddca-41ab-a56c-70705775e2f7
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+###
+
+GET http://localhost:8080/api/Records/getRecordByBuyerID?ID=123
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+###
+
+GET http://localhost:8080/api/Records/getRecordBySellerID?ID=0
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg
+###
+
+DELETE http://localhost:8080/api/Records/deleteRecord?ID=59a6b3cc-ddca-41ab-a56c-70705775e2f7
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MCwiZXhwIjoxNzgzODI2NTQ2LCJqdGkiOiI1YzY0ZTE5My1hYzZlLTRkNjctODI3NS02OTFiNDQ3MjE4NjkiLCJ1c2VybmFtZSI6IuaXoOWQjeawjyJ9.jNQHt3AgceuKlgloR3HzE8i1oM0wyBMYxPQbngTqtTg

@@ -102,8 +102,8 @@ public class PurchaseController {
     }
 
     @DeleteMapping("/delete")
-    public String delete(@RequestParam(name = "id") String id) {
+    public int delete(@RequestParam(name = "id") String id) {
         purchaseInfService.deletePurchase(id);
-        return "success";
+        return 200;
     }
 }
