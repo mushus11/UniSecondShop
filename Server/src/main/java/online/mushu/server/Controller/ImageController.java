@@ -9,6 +9,7 @@ import online.mushu.server.Service.GoodImagesService;
 import online.mushu.server.Service.GoodsService;
 import online.mushu.server.Service.UserProfileService;
 import online.mushu.server.Vo.ImageInfVo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,7 +40,8 @@ public class ImageController {
     @Resource
     UserProfileService userProfileService;
 
-    private final String basePath = "src/main/resources/static/images/";
+    @Value("${image.path}")
+    String basePath;
 
     @PostMapping("/commonImage")
     public int commonImage(@RequestParam(name = "images") List<MultipartFile> images,
