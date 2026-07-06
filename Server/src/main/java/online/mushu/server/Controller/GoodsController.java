@@ -11,6 +11,7 @@ import online.mushu.server.Service.ReleaseInfService;
 import online.mushu.server.Service.UserService;
 import online.mushu.server.Vo.GetGoodsInfVo;
 import online.mushu.server.Vo.GoodVo;
+import online.mushu.server.Vo.ReleaseInfVo;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -120,19 +121,49 @@ public class GoodsController {
     }
 
     @GetMapping("/getGoodsInfIsHarry")
-    public List<ReleaseInf> getGoodsInfIsHarry() {
-        return releaseInfService.getHurry();
+    public List<ReleaseInfVo> getGoodsInfIsHarry() {
+        System.out.println("aaaaaaaaaaaa");
+        List<ReleaseInfVo> list = new ArrayList<>();
+        List<ReleaseInf> infs = releaseInfService.getHurry();
+        for (ReleaseInf inf : infs) {
+            ReleaseInfVo vo = ReleaseInfVo.builder()
+                    .id(inf.getId())
+                    .GoodsID(inf.getGoods().getId())
+                    .downLoadTime(inf.getDownLoadTime())
+                    .hurryMark(inf.isHurryMark())
+                    .topMark(inf.isTopMark())
+                    .upLoadTime(inf.getUpLoadTime())
+                    .state(inf.getState())
+                    .build();
+            list.add(vo);
+        }
+        return list;
     }
 
     @GetMapping("/getGoodsInfIsTop")
-    public List<ReleaseInf> getGoodsInfIsTop() {
-        return releaseInfService.getTop();
+    public List<ReleaseInfVo> getGoodsInfIsTop() {
+        System.out.println("aaaaaaaaaaaa");
+        List<ReleaseInfVo> list = new ArrayList<>();
+        List<ReleaseInf> infs = releaseInfService.getHurry();
+        for (ReleaseInf inf : infs) {
+            ReleaseInfVo vo = ReleaseInfVo.builder()
+                    .id(inf.getId())
+                    .GoodsID(inf.getGoods().getId())
+                    .downLoadTime(inf.getDownLoadTime())
+                    .hurryMark(inf.isHurryMark())
+                    .topMark(inf.isTopMark())
+                    .upLoadTime(inf.getUpLoadTime())
+                    .state(inf.getState())
+                    .build();
+            list.add(vo);
+        }
+        return list;
     }
 
     @DeleteMapping("/delete")
-    public String delete(@RequestParam(name = "goodID") String goodID) {
+    public int delete(@RequestParam(name = "goodID") String goodID) {
         goodsService.deleteGood(goodID);
-        return "success";
+        return 200;
     }
 
 }
