@@ -85,10 +85,10 @@ const activeCategory = ref<number | null>(null)
 const keyword = ref('')
 const allGoods = ref<any[]>([])
 const loading = ref(false)
+const imagePreviewMap = ref<Record<string, string>>({})
 
 const currentPage = ref(1)
 const pageSize = ref(8)
-const total = computed(() => filteredGoods.value.length)
 
 const filteredGoods = computed(() => {
   let list = allGoods.value
@@ -100,7 +100,16 @@ const filteredGoods = computed(() => {
   return list.slice(start, start + pageSize.value)
 })
 
-const getImageUrl = (goodId: string) => `/api/image/getImage/placeholder`
+const total = computed(() => filteredGoods.value.length)
+
+const loadImagePreviews = async () => {
+
+}
+
+const getImageUrl = (goodId: string) => {
+  const imgId = imagePreviewMap.value[goodId]
+  return imgId ? `/api/image/getImage/${imgId}` : ''
+}
 
 const loadGoods = async () => {
   loading.value = true
@@ -120,6 +129,7 @@ const loadGoods = async () => {
       allGoods.value = results.flat()
     }
     currentPage.value = 1
+    loadImagePreviews()
   } catch (e) {
     console.error('加载商品失败:', e)
     allGoods.value = []

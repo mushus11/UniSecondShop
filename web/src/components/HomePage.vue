@@ -34,12 +34,12 @@
       <div v-if="topGoods.length === 0" class="empty-hint">暂无置顶商品</div>
       <div v-for="item in topGoods" :key="item.id" class="product-card" @click="goDetail(item)">
         <div class="product-image">
-          <el-image :src="getImageUrl(item.goodId)" fit="cover" style="width:100%;height:160px">
+          <el-image :src="getImageUrl(item.GoodsID)" fit="cover" style="width:100%;height:160px">
             <template #error><div class="image-placeholder">暂无图片</div></template>
           </el-image>
         </div>
         <div class="product-info">
-          <div class="product-name">{{ getGoodName(item.goodId) }}</div>
+          <div class="product-name">{{ getGoodName(item.GoodsID) }}</div>
           <div class="product-meta">发布ID: {{ item.id }}</div>
           <div class="product-tags">
             <el-tag v-if="item.topMark" type="danger" size="small">置顶</el-tag>
@@ -57,16 +57,14 @@
       <div v-if="hurryGoods.length === 0" class="empty-hint">暂无急出商品</div>
       <div v-for="item in hurryGoods" :key="item.id" class="product-card" @click="goDetail(item)">
         <div class="product-image">
-          <el-image :src="getImageUrl(item.goodId)" fit="cover" style="width:100%;height:160px">
+          <el-image :src="getImageUrl(item.GoodsID)" fit="cover" style="width:100%;height:160px">
             <template #error><div class="image-placeholder">暂无图片</div></template>
           </el-image>
         </div>
         <div class="product-info">
-          <div class="product-name">{{ getGoodName(item.goodId) }}</div>
+          <div class="product-name">{{ getGoodName(item.GoodsID) }}</div>
           <div class="product-meta">发布ID: {{ item.id }}</div>
-          <div class="product-tags">
-            <el-tag v-if="item.hurryMark" type="warning" size="small">急出</el-tag>
-          </div>
+
         </div>
       </div>
     </div>
@@ -98,9 +96,22 @@ const loading = reactive({
 const topGoods = ref<any[]>([])
 const hurryGoods = ref<any[]>([])
 const goodsCache = ref<Map<string, any>>(new Map())
+const imagePreviewMap = ref<Record<string, string>>({})
+
+const fetchImagePreview = async (goodId: string) => {
+  if (!goodId || imagePreviewMap.value[goodId]) return
+  try {
+    const res = await api.get('/image/getImagesID', { params: { goodID: goodId } })
+    const ids = Array.isArray(res.data) ? res.data : []
+    if (ids.length > 0) {
+      imagePreviewMap.value[goodId] = ids[0]
+    }
+  } catch {}
+}
 
 const getImageUrl = (goodId: string) => {
-  return `/api/image/getImage/placeholder`
+  const imgId = imagePreviewMap.value[goodId]
+  return imgId ? `/api/image/getImage/${imgId}` : ''
 }
 
 const getGoodName = (goodId: string) => {
@@ -119,9 +130,10 @@ const loadTopGoods = async () => {
     if (Array.isArray(res.data)) {
       topGoods.value = res.data
       for (const item of res.data) {
-        if (item.goodId && !goodsCache.value.has(item.goodId)) {
-          fetchGoodDetail(item.goodId)
+        if (item.GoodsID && !goodsCache.value.has(item.GoodsID)) {
+          fetchGoodDetail(item.GoodsID)
         }
+        fetchImagePreview(item.GoodsID)
       }
     }
   } catch (e) {
@@ -138,9 +150,10 @@ const loadHurryGoods = async () => {
     if (Array.isArray(res.data)) {
       hurryGoods.value = res.data
       for (const item of res.data) {
-        if (item.goodId && !goodsCache.value.has(item.goodId)) {
-          fetchGoodDetail(item.goodId)
+        if (item.GoodsID && !goodsCache.value.has(item.GoodsID)) {
+          fetchGoodDetail(item.GoodsID)
         }
+        fetchImagePreview(item.GoodsID)
       }
     }
   } catch (e) {

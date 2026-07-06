@@ -108,7 +108,7 @@
         <el-divider>已上传图片</el-divider>
         <div class="image-list" v-loading="imageLoading">
           <div v-for="imgId in imageIds" :key="imgId" class="image-item">
-            <el-image :src="`/api/image/getImage/${imgId}`" fit="cover" style="width:120px;height:120px;border-radius:4px" />
+            <el-image :src="getBlobImageUrl(imgId)" fit="cover" style="width:120px;height:120px;border-radius:4px" />
             <span class="image-id">{{ imgId?.substring(0, 8) }}...</span>
           </div>
           <div v-if="imageIds.length === 0 && !imageLoading" class="empty-hint">暂无图片，请上传</div>
@@ -138,7 +138,7 @@
         <el-divider>已上传凭证</el-divider>
         <div class="image-list" v-loading="voucherLoading">
           <div v-for="imgId in voucherImageIds" :key="imgId" class="image-item">
-            <el-image :src="`/api/image/getImage/${imgId}`" fit="cover" style="width:120px;height:120px;border-radius:4px" />
+            <el-image :src="getBlobImageUrl(imgId)" fit="cover" style="width:120px;height:120px;border-radius:4px" />
             <el-tag type="warning" size="small" style="margin-top:4px">凭证</el-tag>
             <span class="image-id">{{ imgId?.substring(0, 8) }}...</span>
           </div>
@@ -282,19 +282,28 @@ const saveGoods = async () => {
   }
   saving.value = true
   try {
-    const url = form.id ? '/goods/changeGoodInf' : '/goods/uploadGoodInf'
-    const payload: any = {
-      userId: parseInt(loginStore.id) || 0,
-      name: form.name,
-      type: form.type,
-      price: form.price,
-      text: form.text,
-      state: form.state
+    let res
+    if (form.id) {
+      const formData = new FormData()
+      formData.append('goodID', form.id)
+      res = await api.post('/goods/changeGoodInf?goodID=' + encodeURIComponent(form.id), {
+        userId: parseInt(loginStore.id) || 0,
+        name: form.name,
+        type: form.type,
+        price: form.price,
+        text: form.text,
+        state: form.state
+      })
+    } else {
+      res = await api.post('/goods/uploadGoodInf', {
+        userId: parseInt(loginStore.id) || 0,
+        name: form.name,
+        type: form.type,
+        price: form.price,
+        text: form.text,
+        state: form.state
+      })
     }
-    if (form.condition) {
-      payload.text = `[${conditionMap[form.condition] || form.condition}] ${form.text}`
-    }
-    const res = await api.post(url, payload)
     if (res.data === 200 || res.data.code === 200) {
       ElMessage.success(form.id ? '修改成功' : '添加成功')
       dialogVisible.value = false
@@ -314,9 +323,7 @@ const handleDelete = (row: any) => {
     confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
   }).then(async () => {
     try {
-      const formData = new FormData()
-      formData.append('goodID', row.id)
-      const res = await api.delete('/goods/deleteGood', { data: formData })
+      const res = await api.delete('/goods/delete', { params: { goodID: row.id } })
       if (res.data === 200) {
         ElMessage.success('删除成功')
         loadGoods()
@@ -332,6 +339,7 @@ const imageDialogVisible = ref(false)
 const currentGoodId = ref('')
 const imageIds = ref<string[]>([])
 const imageLoading = ref(false)
+const blobUrlCache = ref<Record<string, string>>({})
 const uploadHeaders = computed(() => ({ Authorization: `Bearer ${loginStore.jwt}` }))
 const uploadData = computed(() => ({
   goodID: currentGoodId.value,
@@ -356,6 +364,21 @@ const beforeImageUpload = () => true
 const onImageUploadSuccess = () => {
   ElMessage.success('图片上传成功')
   handleViewImages({ id: currentGoodId.value })
+}
+
+const getBlobImageUrl = (imgId: string) => {
+  if (!imgId) return ''
+  if (blobUrlCache.value[imgId]) return blobUrlCache.value[imgId]
+  loadBlobImage(imgId)
+  return ''
+}
+
+const loadBlobImage = async (imgId: string) => {
+  try {
+    const res = await api.get(`/image/getImage/${imgId}`, { responseType: 'blob' })
+    const url = URL.createObjectURL(res.data)
+    blobUrlCache.value[imgId] = url
+  } catch {}
 }
 
 // ---- 购买凭证管理 ----

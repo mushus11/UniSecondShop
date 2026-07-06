@@ -23,4 +23,5 @@ public class UserInfVo {
     private String profile;
     private boolean certified;
     private String image;
+    private String access;
 }

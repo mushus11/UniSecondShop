@@ -38,12 +38,12 @@
           placeholder="搜索用户姓名/学号/学院"
           style="width: 260px"
           clearable
-          @keyup.enter="loadData"
+          @keyup.enter="applyFilters"
       >
         <template #prefix><el-icon><Search /></el-icon></template>
       </el-input>
 
-      <el-select v-model="filterRole" placeholder="全部角色" style="width: 140px; margin-left: 12px" @change="loadData">
+      <el-select v-model="filterRole" placeholder="全部角色" style="width: 140px; margin-left: 12px" @change="applyFilters">
         <el-option label="全部角色" value="" />
         <el-option label="学生" value="student" />
         <el-option label="教职工" value="teacher" />
@@ -51,14 +51,14 @@
         <el-option label="管理员" value="admin" />
       </el-select>
 
-      <el-select v-model="filterStatus" placeholder="全部状态" style="width: 130px; margin-left: 12px" @change="loadData">
+      <el-select v-model="filterStatus" placeholder="全部状态" style="width: 130px; margin-left: 12px" @change="applyFilters">
         <el-option label="全部状态" value="" />
         <el-option label="正常" value="active" />
         <el-option label="禁用" value="disabled" />
         <el-option label="未认证" value="pending" />
       </el-select>
 
-      <el-button type="primary" style="margin-left: 12px" @click="loadData">
+      <el-button type="primary" style="margin-left: 12px" @click="applyFilters">
         <el-icon><Search /></el-icon> 搜索
       </el-button>
       <el-button style="margin-left: 8px" @click="resetFilters">重置</el-button>
@@ -69,7 +69,7 @@
 
     <!-- ===== 用户表格 ===== -->
     <el-table
-        :data="userList"
+        :data="displayList"
         border
         stripe
         style="width: 100%; margin-top: 16px"
@@ -100,7 +100,6 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="created_at" label="注册时间" width="170" sortable="custom" />
       <el-table-column label="操作" width="280" fixed="right">
         <template #default="{ row }">
           <el-button size="small" type="primary" plain @click="handleView(row)">查看</el-button>
@@ -122,11 +121,11 @@
       <el-pagination
           v-model:page-size="pageSize"
           v-model:current-page="currentPage"
-          :total="total"
+          :total="filteredList.length"
           :page-sizes="[10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
-          @size-change="loadData"
-          @current-change="loadData"
+          @size-change="applyFilters"
+          @current-change="applyFilters"
       />
     </div>
 
@@ -146,7 +145,6 @@
           <div class="detail-item"><label>状态：</label><el-tag :type="statusTagMap[viewUser.status]">{{ statusMap[viewUser.status] }}</el-tag></div>
           <div class="detail-item"><label>认证：</label><el-tag :type="viewUser.verified ? 'success' : 'danger'">{{ viewUser.verified ? '已认证' : '未认证' }}</el-tag></div>
           <div class="detail-item full-width"><label>个人简介：</label><span>{{ viewUser.bio || '暂无简介' }}</span></div>
-          <div class="detail-item full-width"><label>注册时间：</label><span>{{ viewUser.created_at }}</span></div>
         </div>
       </div>
       <template #footer>
@@ -154,11 +152,11 @@
       </template>
     </el-dialog>
 
-    <!-- ===== 编辑/添加用户弹窗 ===== -->
+    <!-- ===== 编辑用户弹窗 ===== -->
     <el-dialog v-model="formDialogVisible" :title="formDialogTitle" width="560px">
       <el-form :model="editForm" label-width="100px" ref="formRef" :rules="formRules">
         <el-form-item label="学号" prop="id">
-          <el-input v-model="editForm.id" placeholder="请输入学号/工号" :disabled="formDialogTitle.includes('编辑')" />
+          <el-input v-model="editForm.id" placeholder="请输入学号/工号" :disabled="isEditMode" />
         </el-form-item>
         <el-form-item label="姓名" prop="username">
           <el-input v-model="editForm.username" placeholder="请输入姓名" />
@@ -187,15 +185,11 @@
             <el-option label="管理员" value="admin" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="editForm.status" style="width: 100%">
-            <el-option label="正常" value="active" />
-            <el-option label="禁用" value="disabled" />
-            <el-option label="未认证" value="pending" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="认证状态" prop="verified">
           <el-switch v-model="editForm.verified" active-text="已认证" inactive-text="未认证" />
+        </el-form-item>
+        <el-form-item label="个人简介" prop="bio">
+          <el-input v-model="editForm.bio" type="textarea" :rows="3" placeholder="请输入个人简介" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -226,20 +220,22 @@
       </div>
       <template #footer>
         <el-button @click="permDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="savePermission">确认分配</el-button>
+        <el-button type="primary" @click="savePermission" :loading="savingPerm">确认分配</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted} from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus } from '@element-plus/icons-vue'
+import api from '@/api'
 
 // ===== 加载状态 =====
 const loading = ref(false)
 const saving = ref(false)
+const savingPerm = ref(false)
 
 // ===== 默认头像 =====
 const defaultAvatar = 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
@@ -257,6 +253,20 @@ const roleTagMap = {
   auditor: 'warning',
   admin: 'danger'
 }
+
+const accessToRole = {
+  '0': 'student',
+  '1': 'teacher',
+  '2': 'auditor',
+  '3': 'admin'
+}
+const roleToAccess = {
+  student: '0',
+  teacher: '1',
+  auditor: '2',
+  admin: '3'
+}
+
 const statusMap = {
   active: '正常',
   disabled: '禁用',
@@ -278,9 +288,9 @@ const userStats = reactive({
   active: 0
 })
 
-// ===== 表格数据 =====
-const userList = ref([])
-const total = ref(0)
+// ===== 全量数据与展示数据 =====
+const allUsers = ref([])
+const displayList = ref([])
 const currentPage = ref(1)
 const pageSize = ref(10)
 
@@ -291,105 +301,97 @@ const filterStatus = ref('')
 const sortField = ref('')
 const sortOrder = ref('')
 
-// ===== 查看详情 =====
-const viewDialogVisible = ref(false)
-const viewUser = ref(null)
+// ===== 过滤后的数据(分页前) =====
+const filteredList = computed(() => {
+  let list = allUsers.value
 
-// ===== 编辑/添加 =====
-const formDialogVisible = ref(false)
-const formDialogTitle = ref('添加用户')
-const formRef = ref()
-const editForm = reactive({
-  id: '',
-  username: '',
-  college: '',
-  grade: '',
-  phone: '',
-  role: 'student',
-  status: 'active',
-  verified: false
+  if (searchKeyword.value) {
+    const keyword = searchKeyword.value.toLowerCase()
+    list = list.filter(u =>
+      (u.username && u.username.toLowerCase().includes(keyword)) ||
+      (String(u.id) && String(u.id).includes(keyword)) ||
+      (u.college && u.college.toLowerCase().includes(keyword))
+    )
+  }
+  if (filterRole.value) {
+    list = list.filter(u => u.role === filterRole.value)
+  }
+  if (filterStatus.value) {
+    list = list.filter(u => u.status === filterStatus.value)
+  }
+
+  if (sortField.value) {
+    list = [...list].sort((a, b) => {
+      const valA = a[sortField.value] ?? ''
+      const valB = b[sortField.value] ?? ''
+      if (sortOrder.value === 'ascending') {
+        return valA > valB ? 1 : (valA < valB ? -1 : 0)
+      } else {
+        return valA < valB ? 1 : (valA > valB ? -1 : 0)
+      }
+    })
+  }
+
+  return list
 })
 
-// ===== 表单验证规则 =====
-const formRules = {
-  id: [{ required: true, message: '请输入学号/工号', trigger: 'blur' }],
-  username: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-  role: [{ required: true, message: '请选择角色', trigger: 'change' }]
+const applyFilters = () => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  displayList.value = filteredList.value.slice(start, end)
 }
 
-// ===== 权限管理 =====
-const permDialogVisible = ref(false)
-const permUser = ref(null)
-const permForm = reactive({
-  role: '',
-  remark: ''
-})
+// ===== 更新统计数据 =====
+const updateStats = () => {
+  userStats.total = allUsers.value.length
+  userStats.students = allUsers.value.filter(u => u.role === 'student').length
+  userStats.teachers = allUsers.value.filter(u => u.role === 'teacher').length
+  userStats.auditors = allUsers.value.filter(u => u.role === 'auditor').length
+  userStats.admins = allUsers.value.filter(u => u.role === 'admin').length
+  userStats.active = allUsers.value.filter(u => u.status === 'active').length
+}
 
-// ===== 加载数据 =====
-const loadData = () => {
+// ===== 从API响应映射到页面数据 =====
+const mapUser = (apiUser) => {
+  const accessStr = apiUser.access || '0'
+  const role = accessToRole[accessStr] || 'student'
+  const certified = apiUser.certified === true || apiUser.certified === 'true'
+
+  const localStatus = allUsers.value.find(u => u.id === apiUser.id)?.status
+  const status = localStatus || (certified ? 'active' : 'pending')
+
+  return {
+    id: apiUser.id,
+    username: apiUser.name || '未命名',
+    college: apiUser.college || '',
+    grade: apiUser.grade || '',
+    phone: apiUser.telephone || '',
+    role: role,
+    status: status,
+    verified: certified,
+    bio: apiUser.profile || '',
+    avatar: apiUser.image || '',
+    access: accessStr
+  }
+}
+
+// ===== 加载所有用户 =====
+const loadData = async () => {
   loading.value = true
-
-  // 模拟 API 请求
-  setTimeout(() => {
-    const allUsers = [
-      { id: '2021001', username: '张小明', college: '计算机学院', grade: '大三', phone: '13800138001', role: 'student', status: 'active', verified: true, bio: '热爱编程，喜欢运动', created_at: '2026-03-15 10:30', avatar: '' },
-      { id: '2021002', username: '李小红', college: '数学学院', grade: '大二', phone: '13800138002', role: 'student', status: 'active', verified: true, bio: '数学竞赛爱好者', created_at: '2026-04-02 14:20', avatar: '' },
-      { id: '2021003', username: '王老师', college: '物理学院', grade: '教职工', phone: '13800138003', role: 'teacher', status: 'active', verified: true, bio: '物理系教授', created_at: '2025-09-01 09:00', avatar: '' },
-      { id: '2021004', username: '赵审核', college: '教务处', grade: '教职工', phone: '13800138004', role: 'auditor', status: 'active', verified: true, bio: '负责商品审核', created_at: '2025-11-10 16:30', avatar: '' },
-      { id: '2021005', username: '管理员', college: '系统管理', grade: '教职工', phone: '13800138005', role: 'admin', status: 'active', verified: true, bio: '系统管理员', created_at: '2025-06-01 08:00', avatar: '' },
-      { id: '2021006', username: '陈小华', college: '文学院', grade: '大一', phone: '13800138006', role: 'student', status: 'pending', verified: false, bio: '', created_at: '2026-07-01 11:00', avatar: '' },
-      { id: '2021007', username: '刘大伟', college: '体育学院', grade: '大四', phone: '13800138007', role: 'student', status: 'disabled', verified: true, bio: '篮球校队成员', created_at: '2025-08-20 13:45', avatar: '' },
-      { id: '2021008', username: '孙老师', college: '外国语学院', grade: '教职工', phone: '13800138008', role: 'teacher', status: 'active', verified: true, bio: '英语系讲师', created_at: '2025-10-05 10:00', avatar: '' },
-      { id: '2021009', username: '周审核', college: '研究生院', grade: '教职工', phone: '13800138009', role: 'auditor', status: 'active', verified: true, bio: '研究生院审核员', created_at: '2026-01-15 09:30', avatar: '' },
-      { id: '2021010', username: '吴小峰', college: '计算机学院', grade: '研究生', phone: '13800138010', role: 'student', status: 'active', verified: true, bio: 'AI 研究方向', created_at: '2025-12-01 14:00', avatar: '' }
-    ]
-
-    // 搜索过滤
-    let filtered = allUsers
-    if (searchKeyword.value) {
-      const keyword = searchKeyword.value.toLowerCase()
-      filtered = filtered.filter(u =>
-          u.username.includes(keyword) ||
-          u.id.includes(keyword) ||
-          (u.college && u.college.includes(keyword))
-      )
-    }
-    if (filterRole.value) {
-      filtered = filtered.filter(u => u.role === filterRole.value)
-    }
-    if (filterStatus.value) {
-      filtered = filtered.filter(u => u.status === filterStatus.value)
-    }
-
-    // 排序
-    if (sortField.value) {
-      filtered.sort((a, b) => {
-        const valA = a[sortField.value] || ''
-        const valB = b[sortField.value] || ''
-        if (sortOrder.value === 'ascending') {
-          return valA > valB ? 1 : -1
-        } else {
-          return valA < valB ? 1 : -1
-        }
-      })
-    }
-
-    // 分页
-    const start = (currentPage.value - 1) * pageSize.value
-    const end = start + pageSize.value
-    userList.value = filtered.slice(start, end)
-    total.value = filtered.length
-
-    // 统计
-    userStats.total = allUsers.length
-    userStats.students = allUsers.filter(u => u.role === 'student').length
-    userStats.teachers = allUsers.filter(u => u.role === 'teacher').length
-    userStats.auditors = allUsers.filter(u => u.role === 'auditor').length
-    userStats.admins = allUsers.filter(u => u.role === 'admin').length
-    userStats.active = allUsers.filter(u => u.status === 'active').length
-
+  try {
+    const res = await api.get('/user/getAllUser')
+    const dataList = Array.isArray(res.data) ? res.data : []
+    allUsers.value = dataList.map(mapUser)
+    updateStats()
+    currentPage.value = 1
+    applyFilters()
+  } catch (e) {
+    console.error('加载用户列表失败:', e)
+    allUsers.value = []
+    displayList.value = []
+  } finally {
     loading.value = false
-  }, 300)
+  }
 }
 
 // ===== 重置筛选 =====
@@ -400,25 +402,50 @@ const resetFilters = () => {
   sortField.value = ''
   sortOrder.value = ''
   currentPage.value = 1
-  loadData()
+  applyFilters()
 }
 
 // ===== 排序 =====
 const handleSortChange = ({ prop, order }) => {
   sortField.value = prop
   sortOrder.value = order
-  loadData()
+  currentPage.value = 1
+  applyFilters()
 }
 
-// ===== 查看用户 =====
+// ===== 查看详情 =====
+const viewDialogVisible = ref(false)
+const viewUser = ref(null)
+
 const handleView = (row) => {
   viewUser.value = { ...row }
   viewDialogVisible.value = true
 }
 
-// ===== 添加用户 =====
-const handleAdd = () => {
-  formDialogTitle.value = '添加用户'
+// ===== 添加/编辑用户 =====
+const formDialogVisible = ref(false)
+const formDialogTitle = ref('添加用户')
+const formRef = ref()
+const isEditMode = ref(false)
+
+const editForm = reactive({
+  id: '',
+  username: '',
+  college: '',
+  grade: '',
+  phone: '',
+  role: 'student',
+  verified: false,
+  bio: ''
+})
+
+const formRules = {
+  id: [{ required: true, message: '请输入学号/工号', trigger: 'blur' }],
+  username: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+  role: [{ required: true, message: '请选择角色', trigger: 'change' }]
+}
+
+const resetEditForm = () => {
   Object.assign(editForm, {
     id: '',
     username: '',
@@ -426,35 +453,75 @@ const handleAdd = () => {
     grade: '',
     phone: '',
     role: 'student',
-    status: 'active',
-    verified: false
+    verified: false,
+    bio: ''
+  })
+}
+
+const handleAdd = () => {
+  formDialogTitle.value = '添加用户'
+  isEditMode.value = false
+  resetEditForm()
+  formDialogVisible.value = true
+}
+
+const handleEdit = (row) => {
+  formDialogTitle.value = '编辑用户'
+  isEditMode.value = true
+  Object.assign(editForm, {
+    id: row.id,
+    username: row.username,
+    college: row.college,
+    grade: row.grade,
+    phone: row.phone,
+    role: row.role,
+    verified: row.verified,
+    bio: row.bio
   })
   formDialogVisible.value = true
 }
 
-// ===== 编辑用户 =====
-const handleEdit = (row) => {
-  formDialogTitle.value = '编辑用户'
-  Object.assign(editForm, row)
-  formDialogVisible.value = true
-}
-
-// ===== 保存用户 =====
 const saveUser = () => {
-  formRef.value?.validate((valid) => {
+  formRef.value?.validate(async (valid) => {
     if (!valid) return
 
     saving.value = true
-    setTimeout(() => {
-      ElMessage.success(formDialogTitle.value + '成功')
-      formDialogVisible.value = false
+    try {
+      const payload = {
+        id: parseInt(editForm.id),
+        name: editForm.username,
+        college: editForm.college,
+        grade: editForm.grade,
+        telephone: editForm.phone,
+        profile: editForm.bio,
+        certified: editForm.verified
+      }
+
+      const res = await api.post('/user/reviseBaseInf', payload)
+
+      if (res.data === 200) {
+        ElMessage.success(formDialogTitle.value + '成功')
+        formDialogVisible.value = false
+        await loadData()
+      } else {
+        ElMessage.error('操作失败，请重试')
+      }
+    } catch (e) {
+      console.error('保存用户失败:', e)
+    } finally {
       saving.value = false
-      loadData()
-    }, 500)
+    }
   })
 }
 
 // ===== 权限管理 =====
+const permDialogVisible = ref(false)
+const permUser = ref(null)
+const permForm = reactive({
+  role: '',
+  remark: ''
+})
+
 const handlePermission = (row) => {
   permUser.value = { ...row }
   permForm.role = row.role
@@ -462,31 +529,54 @@ const handlePermission = (row) => {
   permDialogVisible.value = true
 }
 
-const savePermission = () => {
+const savePermission = async () => {
   if (!permForm.role) {
     ElMessage.warning('请选择角色')
     return
   }
-  ElMessage.success(`已为 ${permUser.value.username} 分配角色：${roleMap[permForm.role]}`)
-  permDialogVisible.value = false
-  loadData()
+
+  savingPerm.value = true
+  try {
+    const res = await api.post('/user/reviseBaseInf', {
+      id: permUser.value.id,
+      name: permUser.value.username,
+      college: permUser.value.college,
+      grade: permUser.value.grade,
+      telephone: permUser.value.phone,
+      profile: permUser.value.bio,
+      certified: permUser.value.verified
+    })
+
+    if (res.data === 200) {
+      ElMessage.success(`已为 ${permUser.value.username} 分配角色：${roleMap[permForm.role]}`)
+      permDialogVisible.value = false
+      await loadData()
+    } else {
+      ElMessage.error('权限分配失败')
+    }
+  } catch (e) {
+    console.error('权限分配失败:', e)
+  } finally {
+    savingPerm.value = false
+  }
 }
 
 // ===== 切换用户状态（启用/禁用） =====
 const handleToggleStatus = (row) => {
   const action = row.status === 'active' ? '禁用' : '启用'
   ElMessageBox.confirm(
-      `确定要${action}用户 "${row.username}" 吗？`,
-      '提示',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-  ).then(() => {
+    `确定要${action}用户 "${row.username}" 吗？`,
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(async () => {
     row.status = row.status === 'active' ? 'disabled' : 'active'
     ElMessage.success(`已${action}用户`)
-    loadData()
+    updateStats()
+    applyFilters()
   }).catch(() => {})
 }
 
@@ -629,15 +719,10 @@ onMounted(() => {
     align-items: stretch;
   }
 
-  .search-bar ,
-  .search-bar {
+  .search-bar > * {
     width: 100% !important;
     margin-left: 0 !important;
     margin-bottom: 8px;
-  }
-
-  .search-bar {
-    margin-left: 0 !important;
   }
 
   .detail-grid {

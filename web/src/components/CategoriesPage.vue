@@ -22,7 +22,7 @@
           <div v-if="categoryGoods.length === 0 && !catLoading" class="empty-hint">该分类暂无商品</div>
           <div v-for="item in categoryGoods" :key="item.id" class="item-card">
             <div class="item-image">
-              <el-image :src="`/api/image/getImage/placeholder`" fit="cover" style="width:100%;height:140px">
+              <el-image :src="getCatImageUrl(item.id)" fit="cover" style="width:100%;height:140px">
                 <template #error><div class="image-placeholder">暂无图片</div></template>
               </el-image>
             </div>
@@ -48,7 +48,7 @@
     <el-dialog v-model="showTopDialog" title="⭐ 置顶商品管理" width="700px">
       <el-table :data="topGoods" border stripe v-loading="topLoading">
         <el-table-column prop="id" label="发布编号" width="280" show-overflow-tooltip />
-        <el-table-column prop="goodId" label="商品ID" width="280" show-overflow-tooltip />
+        <el-table-column prop="GoodsID" label="商品ID" width="280" show-overflow-tooltip />
         <el-table-column label="状态" width="100">
           <template #default="{ row }"><el-tag>{{ stateMap[row.state] }}</el-tag></template>
         </el-table-column>
@@ -63,7 +63,7 @@
     <el-dialog v-model="showHurryDialog" title="🔥 急出商品专区" width="700px">
       <el-table :data="hurryGoods" border stripe v-loading="hurryLoading">
         <el-table-column prop="id" label="发布编号" width="280" show-overflow-tooltip />
-        <el-table-column prop="goodId" label="商品ID" width="280" show-overflow-tooltip />
+        <el-table-column prop="GoodsID" label="商品ID" width="280" show-overflow-tooltip />
         <el-table-column label="状态" width="100">
           <template #default="{ row }"><el-tag>{{ stateMap[row.state] }}</el-tag></template>
         </el-table-column>
@@ -114,6 +114,27 @@ const categoryGoodsTotal = ref(0)
 const catLoading = ref(false)
 const catPage = ref(1)
 const catPageSize = ref(8)
+const catImagePreviewMap = ref<Record<string, string>>({})
+
+const getCatImageUrl = (goodId: string) => {
+  const imgId = catImagePreviewMap.value[goodId]
+  return imgId ? `/api/image/getImage/${imgId}` : ''
+}
+
+const loadCatImagePreviews = async () => {
+  const map: Record<string, string> = {}
+  const promises = categoryGoods.value.map(async (good) => {
+    try {
+      const res = await api.get('/image/getImagesID', { params: { goodID: good.id } })
+      const ids = Array.isArray(res.data) ? res.data : []
+      if (ids.length > 0) {
+        map[good.id] = ids[0]
+      }
+    } catch {}
+  })
+  await Promise.all(promises)
+  catImagePreviewMap.value = map
+}
 
 const loadCategoryCounts = async () => {
   for (const type of [0, 1, 2, 3, 4, 5]) {
@@ -137,6 +158,7 @@ const loadCategoryGoods = async () => {
     })
     categoryGoods.value = Array.isArray(res.data) ? res.data : []
     categoryGoodsTotal.value = categoryGoods.value.length
+    loadCatImagePreviews()
   } catch (e) {
     categoryGoods.value = []
     categoryGoodsTotal.value = 0
@@ -147,9 +169,7 @@ const loadCategoryGoods = async () => {
 
 const handleTopItem = async (item: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', item.id)
-    const res = await api.post('/Release/changeTop', formData)
+    const res = await api.post('/Release/changeTop', null, { params: { ID: item.id } })
     ElMessage.success(res.data === 200 ? '置顶成功' : '操作失败')
     loadTopGoods()
   } catch (e) {
@@ -159,9 +179,7 @@ const handleTopItem = async (item: any) => {
 
 const handleHurryItem = async (item: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', item.id)
-    const res = await api.post('/Release/changeHurry', formData)
+    const res = await api.post('/Release/changeHurry', null, { params: { ID: item.id } })
     ElMessage.success(res.data === 200 ? '急出标记成功' : '操作失败')
     loadHurryGoods()
   } catch (e) {
@@ -186,9 +204,7 @@ const loadTopGoods = async () => {
 
 const handleCancelTop = async (row: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', row.goodId || row.id)
-    await api.post('/Release/changeTop', formData)
+    await api.post('/Release/changeTop', null, { params: { ID: row.id } })
     ElMessage.success('已取消置顶')
     loadTopGoods()
   } catch (e) {}
@@ -211,9 +227,7 @@ const loadHurryGoods = async () => {
 
 const handleCancelHurry = async (row: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', row.goodId || row.id)
-    await api.post('/Release/changeHurry', formData)
+    await api.post('/Release/changeHurry', null, { params: { ID: row.id } })
     ElMessage.success('已取消急出')
     loadHurryGoods()
   } catch (e) {}

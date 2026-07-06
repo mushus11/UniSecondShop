@@ -7,13 +7,10 @@
         <div class="avatar-section">
           <el-avatar :size="120" :src="userInfo.avatar || defaultAvatar" />
           <el-upload
-            :action="'/api/image/postImage'"
-            :headers="uploadHeaders"
-            :data="{ id: userInfo.id }"
-            name="image"
+            :auto-upload="false"
             :show-file-list="false"
-            :on-success="onAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
+            :on-change="handleAvatarChange"
+            accept="image/*"
             style="margin-top:12px"
           >
             <el-button size="small">更换头像</el-button>
@@ -285,6 +282,25 @@ const beforeAvatarUpload = (file: File) => {
   return isImage
 }
 
+const handleAvatarChange = async (file: any) => {
+  if (!beforeAvatarUpload(file.raw)) return
+
+  const formData = new FormData()
+  formData.append('image', file.raw)
+  formData.append('id', String(userInfo.id || loginStore.id))
+
+  try {
+    const res = await api.post('/image/postImage', formData)
+    if (res.data) {
+      userInfo.avatar = res.data
+      ElMessage.success('头像上传成功')
+    }
+  } catch (e) {
+    console.error('上传失败:', e)
+    ElMessage.error('头像上传失败')
+  }
+}
+
 const onAvatarSuccess = (response: any) => {
   if (response) {
     userInfo.avatar = response
@@ -356,9 +372,7 @@ const handleDeletePurchase = async (row: any) => {
     confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
   }).then(async () => {
     try {
-      const formData = new FormData()
-      formData.append('id', row.id)
-      const res = await api.delete('/Purchase/delete', { data: formData })
+      const res = await api.delete('/Purchase/delete', { params: { id: row.id } })
       if (res.data === 200) {
         ElMessage.success('删除成功')
         loadMyPurchases()
