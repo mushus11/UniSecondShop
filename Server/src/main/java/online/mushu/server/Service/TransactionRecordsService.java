@@ -26,12 +26,20 @@ public class TransactionRecordsService {
         return transactionRecordsRepository.findById(id).orElse(null);
     }
 
-    public void updateRecord(String id, TransactionRecords transactionRecords) {
+    public void updateRecord(TransactionRecords transactionRecords) {
         transactionRecordsRepository.save(transactionRecords);
     }
 
     public List<TransactionRecords> getRecordsByUserID(int id) {
         return transactionRecordsRepository.findByBuyerIDAndSellerID(id, id);
+    }
+
+    public List<TransactionRecords> getRecordsBySellerID(int id) {
+        return transactionRecordsRepository.findBySellerID(id);
+    }
+
+    public List<TransactionRecords> getRecordsByBuyerID(int id) {
+        return transactionRecordsRepository.findByBuyerID(id);
     }
 
     public void delete(String id) {

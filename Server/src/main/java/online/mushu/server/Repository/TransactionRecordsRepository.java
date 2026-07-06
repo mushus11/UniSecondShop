@@ -16,8 +16,16 @@ public interface TransactionRecordsRepository extends JpaRepository<TransactionR
 
 
     @Modifying
-    @Query("delete from TransactionRecords tr where tr.buyer.id = :buyerID and tr.seller.id = :sellerID")
+    @Query("select tr from TransactionRecords tr where tr.buyer.id = :buyerID or tr.seller.id = :sellerID")
     List<TransactionRecords> findByBuyerIDAndSellerID(@Param("buyerID") int buyerID, @Param("sellerID") int sellerID);
+
+    @Modifying
+    @Query("select tr from TransactionRecords tr where tr.seller.id = :sellerID")
+    List<TransactionRecords> findBySellerID(@Param("sellerID") int sellerID);
+
+    @Modifying
+    @Query("select tr from TransactionRecords tr where tr.buyer.id = :buyerID")
+    List<TransactionRecords> findByBuyerID(@Param("buyerID") int buyerID);
 
 
 }
