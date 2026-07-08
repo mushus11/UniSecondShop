@@ -104,6 +104,7 @@ public class User {
                 .college(userProfile.getCollege())
                 .grade(userProfile.getGrade())
                 .image(userProfile.getImage())
+                .access(userProfile.getAccess())
                 .build();
     }
 
@@ -122,6 +123,7 @@ public class User {
                     .college(userProfile.getCollege())
                     .grade(userProfile.getGrade())
                     .image(userProfile.getImage())
+                    .access(userProfile.getAccess())
                     .build();
             vos.add(userInfVo);
         }

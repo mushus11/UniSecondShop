@@ -42,4 +42,8 @@ public class ReleaseInfService {
         return releaseInfRepository.findByState(state);
     }
 
+    public List<ReleaseInf> getAll() {
+        return releaseInfRepository.findAll();
+    }
+
 }

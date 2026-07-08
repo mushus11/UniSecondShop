@@ -51,4 +51,8 @@ public class GoodsService {
     public void deleteGood(String id) {
         goodsRepository.deleteById(id);
     }
+
+    public List<Goods> getAllGoods() {
+        return goodsRepository.findAll();
+    }
 }

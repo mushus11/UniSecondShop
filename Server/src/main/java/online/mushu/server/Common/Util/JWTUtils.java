@@ -12,6 +12,7 @@ import jakarta.annotation.Resource;
 import online.mushu.server.Security.UserIdDetail;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -30,8 +31,8 @@ import java.util.UUID;
 @Component
 public class JWTUtils {
 
-//    @Value("${jwt.sign}")
-    String sign = "123456";
+    @Value("${jwt.sign}")
+    String sign;
 
 
     // 用于连接Redis数据库
