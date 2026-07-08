@@ -12,9 +12,9 @@
     <div class="search-bar">
       <el-input v-model="keyword" placeholder="搜索商品ID/交易单号" style="width: 260px" clearable />
       <el-select v-model="filterState" placeholder="全部状态" style="width: 130px; margin-left: 12px">
-        <el-option label="全部" value="all" />
-        <el-option label="处理中" value="false" />
-        <el-option label="已完成" value="true" />
+        <el-option label="全部" :value="null" />
+        <el-option label="处理中" :value="false" />
+        <el-option label="已完成" :value="true" />
       </el-select>
       <el-select v-model="filterRole" placeholder="全部角色" style="width: 130px; margin-left: 12px">
         <el-option label="全部" value="all" />
@@ -112,7 +112,7 @@ const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const keyword = ref('')
-const filterState = ref<string>('all')
+const filterState = ref<boolean | null>(null)
 const filterRole = ref('all')
 
 const filteredList = computed(() => {
@@ -121,8 +121,8 @@ const filteredList = computed(() => {
     const kw = keyword.value.trim().toLowerCase()
     list = list.filter(r => r.goodID?.toLowerCase().includes(kw) || r.id?.toLowerCase().includes(kw))
   }
-  if (filterState.value !== 'all') {
-    list = list.filter(r => String(r.state) === filterState.value)
+  if (filterState.value !== null) {
+    list = list.filter(r => r.state === filterState.value)
   }
   return list
 })
@@ -165,7 +165,9 @@ const handleDetail = (row: any) => {
 
 const handleComplete = async (row: any) => {
   try {
-    const res = await api.post('/Records/changeState', { id: row.id })
+    const res = await api.post('/Records/changeState', {
+      id: row.id
+    })
     if (res.data === 200) {
       ElMessage.success('交易已完成')
       loadData()
@@ -182,7 +184,9 @@ const handleDelete = (row: any) => {
     confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
   }).then(async () => {
     try {
-      const res = await api.delete('/Records/deleteRecord', { params: { ID: row.id } })
+      const res = await api.delete('/Records/deleteRecord', {
+        params: { ID: row.id }
+      })
       if (res.data === 200) {
         ElMessage.success('删除成功')
         loadData()

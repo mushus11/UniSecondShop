@@ -7,10 +7,13 @@
         <div class="avatar-section">
           <el-avatar :size="120" :src="userInfo.avatar || defaultAvatar" />
           <el-upload
-            :auto-upload="false"
+            :action="'/api/image/postImage'"
+            :headers="uploadHeaders"
+            :data="{ id: userInfo.id }"
+            name="image"
             :show-file-list="false"
-            :on-change="handleAvatarChange"
-            accept="image/*"
+            :on-success="onAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
             style="margin-top:12px"
           >
             <el-button size="small">更换头像</el-button>
@@ -188,7 +191,7 @@ const loadUserInfo = async () => {
     const res = await api.get('/user/getUserInf', {
       params: { id: userIdNum.value }
     })
-    if (res.data) {
+    if (res.data && res.data.code !== 201) {
       userInfo.id = String(res.data.id || loginStore.id)
       userInfo.name = res.data.name || ''
       userInfo.college = res.data.college || ''
@@ -282,25 +285,6 @@ const beforeAvatarUpload = (file: File) => {
   return isImage
 }
 
-const handleAvatarChange = async (file: any) => {
-  if (!beforeAvatarUpload(file.raw)) return
-
-  const formData = new FormData()
-  formData.append('image', file.raw)
-  formData.append('id', String(userInfo.id || loginStore.id))
-
-  try {
-    const res = await api.post('/image/postImage', formData)
-    if (res.data) {
-      userInfo.avatar = res.data
-      ElMessage.success('头像上传成功')
-    }
-  } catch (e) {
-    console.error('上传失败:', e)
-    ElMessage.error('头像上传失败')
-  }
-}
-
 const onAvatarSuccess = (response: any) => {
   if (response) {
     userInfo.avatar = response
@@ -372,7 +356,9 @@ const handleDeletePurchase = async (row: any) => {
     confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
   }).then(async () => {
     try {
-      const res = await api.delete('/Purchase/delete', { params: { id: row.id } })
+      const res = await api.delete('/Purchase/delete', {
+        params: { id: row.id }
+      })
       if (res.data === 200) {
         ElMessage.success('删除成功')
         loadMyPurchases()

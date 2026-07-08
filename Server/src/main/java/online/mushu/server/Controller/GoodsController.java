@@ -108,10 +108,7 @@ public class GoodsController {
 
 //    可行
     @GetMapping("/getGoodsInfByType")
-    public List<GetGoodsInfVo> getGoodsInfByType(
-            @RequestParam(name = "type", required = false, defaultValue = "0") int type,
-            @RequestParam(name = "userID", required = false) Integer userID,
-            @RequestParam(name = "goodID", required = false) String goodID) {
+    public List<GetGoodsInfVo> getGoodsInfByType(@RequestParam(name = "type") int type) {
         List<GetGoodsInfVo> list = new ArrayList<>();
         List<Goods> goods = goodsService.getGoodsByType(type);
         for (Goods good : goods) {
@@ -131,32 +128,12 @@ public class GoodsController {
 
     @GetMapping("/getGoodsInfIsHarry")
     public List<ReleaseInfVo> getGoodsInfIsHarry() {
-        System.out.println("aaaaaaaaaaaa");
         List<ReleaseInfVo> list = new ArrayList<>();
         List<ReleaseInf> infs = releaseInfService.getHurry();
         for (ReleaseInf inf : infs) {
             ReleaseInfVo vo = ReleaseInfVo.builder()
                     .id(inf.getId())
-                    .GoodsID(inf.getGoods().getId())
-                    .downLoadTime(inf.getDownLoadTime())
-                    .hurryMark(inf.isHurryMark())
-                    .topMark(inf.isTopMark())
-                    .upLoadTime(inf.getUpLoadTime())
-                    .state(inf.getState())
-                    .build();
-            list.add(vo);
-        }
-        return list;
-    }
-
-    @GetMapping("/getAllGoods")
-    public List<ReleaseInfVo> getAllGoods() {
-        List<ReleaseInfVo> list = new ArrayList<>();
-        List<ReleaseInf> infs = releaseInfService.getAll();
-        for (ReleaseInf inf : infs) {
-            ReleaseInfVo vo = ReleaseInfVo.builder()
-                    .id(inf.getId())
-                    .GoodsID(inf.getGoods().getId())
+                    .goodsID(inf.getGoods().getId())
                     .downLoadTime(inf.getDownLoadTime())
                     .hurryMark(inf.isHurryMark())
                     .topMark(inf.isTopMark())
@@ -170,13 +147,12 @@ public class GoodsController {
 
     @GetMapping("/getGoodsInfIsTop")
     public List<ReleaseInfVo> getGoodsInfIsTop() {
-        System.out.println("aaaaaaaaaaaa");
         List<ReleaseInfVo> list = new ArrayList<>();
         List<ReleaseInf> infs = releaseInfService.getTop();
         for (ReleaseInf inf : infs) {
             ReleaseInfVo vo = ReleaseInfVo.builder()
                     .id(inf.getId())
-                    .GoodsID(inf.getGoods().getId())
+                    .goodsID(inf.getGoods().getId())
                     .downLoadTime(inf.getDownLoadTime())
                     .hurryMark(inf.isHurryMark())
                     .topMark(inf.isTopMark())

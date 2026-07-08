@@ -17,8 +17,8 @@
 
     <div class="search-bar">
       <el-input v-model="keyword" placeholder="搜索商品" style="width: 200px" clearable />
-      <el-select v-model="filterState" placeholder="全部状态" style="width: 130px; margin-left: 12px" @change="loadData">
-        <el-option label="全部" :value="-1" />
+      <el-select v-model="filterState" placeholder="全部状态" style="width: 130px; margin-left: 12px">
+        <el-option label="全部" :value="null" />
         <el-option label="上架" :value="1" />
         <el-option label="下架" :value="2" />
         <el-option label="售出" :value="3" />
@@ -30,7 +30,7 @@
     <el-table :data="pagedList" border stripe style="width: 100%; margin-top: 16px" v-loading="loading" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="50" />
       <el-table-column prop="id" label="发布编号" width="240" show-overflow-tooltip />
-      <el-table-column prop="GoodsID" label="商品ID" width="240" show-overflow-tooltip />
+      <el-table-column prop="goodId" label="商品ID" width="240" show-overflow-tooltip />
       <el-table-column label="状态" width="90">
         <template #default="{ row }">
           <el-tag :type="stateTagMap[row.state]">{{ stateMap[row.state] }}</el-tag>
@@ -62,8 +62,7 @@
       <el-pagination v-model:page-size="pageSize" v-model:current-page="currentPage" :total="filteredList.length" :page-sizes="[10, 20, 50]" layout="total, sizes, prev, pager, next" />
     </div>
 
-    <!-- 发布商品弹窗 -->
-    <el-dialog v-model="dialogVisible" title="发布商品" width="600px" top="3vh">
+    <el-dialog v-model="dialogVisible" title="发布商品" width="600px">
       <el-form :model="publishForm" label-width="100px">
         <el-form-item label="商品名称" required>
           <el-input v-model="publishForm.name" placeholder="请输入商品名称" />
@@ -89,7 +88,6 @@
       </template>
     </el-dialog>
 
-    <!-- 预约登记弹窗 -->
     <el-dialog v-model="showReservationDialog" title="📅 交易预约登记" width="600px">
       <el-form :model="reservationForm" label-width="100px">
         <el-form-item label="商品ID" required>
@@ -104,8 +102,8 @@
         <el-form-item label="交易地点">
           <el-input v-model="reservationForm.tradingLocation" placeholder="如：图书馆门口" />
         </el-form-item>
-        <el-form-item label="预约备注">
-          <el-input v-model="reservationForm.note" type="textarea" :rows="2" placeholder="预约备注信息" />
+        <el-form-item label="备注">
+          <el-input v-model="reservationForm.note" type="textarea" :rows="2" placeholder="预约备注" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -114,7 +112,6 @@
       </template>
     </el-dialog>
 
-    <!-- 线下面交登记弹窗 -->
     <el-dialog v-model="showMeetupDialog" title="📍 线下面交登记" width="600px">
       <el-alert title="线下面交说明" type="info" :closable="false" style="margin-bottom:16px">
         线下自提无线上资金流转，请双方确认身份后面交完成交易。
@@ -133,7 +130,7 @@
           <el-input-number v-model="meetupForm.price" :min="0" :precision="2" style="width:100%" />
         </el-form-item>
         <el-form-item label="面交地点" required>
-          <el-input v-model="meetupForm.tradingLocation" placeholder="如：校园食堂门口、图书馆大厅" />
+          <el-input v-model="meetupForm.tradingLocation" placeholder="如：校园食堂门口" />
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="meetupForm.note" type="textarea" :rows="2" placeholder="面交备注" />
@@ -168,16 +165,16 @@ const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const keyword = ref('')
-const filterState = ref<number>(-1)
+const filterState = ref<number | null>(null)
 const selectedRows = ref<any[]>([])
 
 const filteredList = computed(() => {
   let list = allList.value
   if (keyword.value.trim()) {
     const kw = keyword.value.trim().toLowerCase()
-    list = list.filter(r => r.GoodsID?.toLowerCase().includes(kw) || r.id?.toLowerCase().includes(kw))
+    list = list.filter(r => r.goodId?.toLowerCase().includes(kw) || r.id?.toLowerCase().includes(kw))
   }
-  if (filterState.value !== -1) {
+  if (filterState.value !== null) {
     list = list.filter(r => r.state === filterState.value)
   }
   return list
@@ -191,15 +188,14 @@ const pagedList = computed(() => {
 const loadData = async () => {
   loading.value = true
   try {
-    const [upRes, downRes, outRes] = await Promise.all([
+    const [upRes, downRes] = await Promise.all([
       api.get('/Release/getUpGoods').then(r => (Array.isArray(r.data) ? r.data : [])).catch(() => []),
-      api.get('/Release/getDownGoods').then(r => (Array.isArray(r.data) ? r.data : [])).catch(() => []),
-      api.get('/Release/getOutGoods').then(r => (Array.isArray(r.data) ? r.data : [])).catch(() => [])
+      api.get('/Release/getDownGoods').then(r => (Array.isArray(r.data) ? r.data : [])).catch(() => [])
     ])
-    allList.value = [...upRes, ...downRes, ...outRes]
+    allList.value = [...upRes, ...downRes]
     stats.up = upRes.length
     stats.down = downRes.length
-    stats.sold = outRes.length
+    stats.sold = allList.value.filter(r => r.state === 3).length
   } catch (e) { console.error('加载发布列表失败:', e) } finally { loading.value = false }
 }
 
@@ -209,7 +205,9 @@ const handleStateChange = async (row: any, action: 'up' | 'down' | 'out') => {
   const actionMap = { up: 'changeStateUp', down: 'changeStateDown', out: 'changeStateOut' }
   const labelMap = { up: '上架', down: '下架', out: '售出' }
   try {
-    const res = await api.post(`/Release/${actionMap[action]}`, null, { params: { ID: row.id } })
+    const res = await api.post(`/Release/${actionMap[action]}`, null, {
+      params: { ID: row.goodId || row.id }
+    })
     if (res.data === 200) { ElMessage.success(`${labelMap[action]}成功`); loadData() }
     else { ElMessage.error(`${labelMap[action]}失败`) }
   } catch (e) { console.error('状态变更失败:', e) }
@@ -217,7 +215,9 @@ const handleStateChange = async (row: any, action: 'up' | 'down' | 'out') => {
 
 const handleToggleTop = async (row: any) => {
   try {
-    const res = await api.post('/Release/changeTop', null, { params: { ID: row.id } })
+    const res = await api.post('/Release/changeTop', null, {
+      params: { ID: row.goodId || row.id }
+    })
     if (res.data === 200) { ElMessage.success(row.topMark ? '已取消置顶' : '已置顶'); loadData() }
     else { ElMessage.error('操作失败') }
   } catch (e) { console.error('置顶操作失败:', e) }
@@ -225,7 +225,9 @@ const handleToggleTop = async (row: any) => {
 
 const handleToggleHurry = async (row: any) => {
   try {
-    const res = await api.post('/Release/changeHurry', null, { params: { ID: row.id } })
+    const res = await api.post('/Release/changeHurry', null, {
+      params: { ID: row.goodId || row.id }
+    })
     if (res.data === 200) { ElMessage.success(row.hurryMark ? '已取消急出' : '已标记急出'); loadData() }
     else { ElMessage.error('操作失败') }
   } catch (e) { console.error('急出操作失败:', e) }
@@ -238,7 +240,9 @@ const handleBatchDown = async () => {
   }).then(async () => {
     for (const row of selectedRows.value) {
       try {
-        await api.post('/Release/changeStateDown', null, { params: { ID: row.id } })
+        await api.post('/Release/changeStateDown', null, {
+          params: { ID: row.goodId || row.id }
+        })
       } catch (e) {}
     }
     ElMessage.success('批量下架完成')
@@ -246,7 +250,6 @@ const handleBatchDown = async () => {
   }).catch(() => {})
 }
 
-// ---- 发布商品 ----
 const dialogVisible = ref(false)
 const publishing = ref(false)
 const publishForm = reactive({ name: '', type: 0, price: 0, text: '', state: true })
@@ -267,14 +270,15 @@ const submitPublish = async () => {
     })
     if (res.data && res.data.goodID) {
       if (publishForm.state) {
-        await api.post('/Release/changeStateUp', null, { params: { ID: res.data.goodID } })
+        await api.post('/Release/changeStateUp', null, {
+          params: { ID: res.data.goodID }
+        })
       }
       ElMessage.success('发布成功'); dialogVisible.value = false; loadData()
     } else { ElMessage.error('发布失败') }
   } catch (e) { console.error('发布失败:', e) } finally { publishing.value = false }
 }
 
-// ---- 预约登记 ----
 const showReservationDialog = ref(false)
 const reserving = ref(false)
 const reservationForm = reactive({
