@@ -158,9 +158,9 @@ const handleDeleteUser = (row: any) => {
     confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
   }).then(async () => {
     try {
-      const formData = new FormData()
-      formData.append('id', String(row.id))
-      const res = await api.delete('/user/delete', { data: formData })
+      const res = await api.delete('/user/delete', {
+        params: { id: row.id }
+      })
       if (res.data === 200) {
         ElMessage.success('删除成功')
         loadData()

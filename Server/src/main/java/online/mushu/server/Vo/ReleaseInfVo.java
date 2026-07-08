@@ -16,8 +16,8 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Builder
 public class ReleaseInfVo {
-    public String id;
-    private String GoodsID;
+    private String id;
+    private String goodsID;
     private Timestamp upLoadTime;
     private Timestamp downLoadTime;
     private int state;

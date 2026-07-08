@@ -82,6 +82,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/", "/favicon.ico", "/static/*").permitAll()
                         .requestMatchers("/api/user/login").permitAll()//表示将所有 /api/auth/login 到来的数据都放行
                         .requestMatchers("/api/user/register", "/api/user/changePassword").permitAll()//表示注册的路径放行
+                        .requestMatchers("/api/image/**").permitAll()//图片资源无需认证
                         .anyRequest().authenticated()
                 )
 
@@ -116,8 +117,9 @@ public class SecurityConfiguration {
         response.setContentType("application/json; charset=utf-8");
 
         UserProfile profile = userProfileService.getUserProfile(user.getId());
+        int access = (profile != null) ? profile.getID() : 0;
 
-        response.getWriter().write(Login.Success(user.getUsername(), profile.getID(), user.getId(), jwt).asJsonString());
+        response.getWriter().write(Login.Success(user.getUsername(), access, user.getId(), jwt).asJsonString());
     }
 
     public void onAuthenticationFailure(HttpServletRequest request,

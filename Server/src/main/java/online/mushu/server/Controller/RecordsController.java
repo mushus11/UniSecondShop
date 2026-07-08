@@ -12,6 +12,7 @@ import online.mushu.server.Service.UserService;
 import online.mushu.server.Vo.RecordsVo;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -39,7 +40,9 @@ public class RecordsController {
         User seller = userService.getUserById(sellerID);
         Goods good = goodsService.getGoodsByID(goodID);
 
-        TransactionRecords record = new TransactionRecords(id, buyer, seller, good, dto.getTransactionTime(), dto.getTradingLocation(), good.getPrice(), dto.getNote(), dto.isState());
+        Timestamp transactionTime = dto.getTransactionTime() != null ? dto.getTransactionTime() : new Timestamp(System.currentTimeMillis());
+
+        TransactionRecords record = new TransactionRecords(id, buyer, seller, good, transactionTime, dto.getTradingLocation(), good.getPrice(), dto.getNote(), dto.isState());
         transactionRecordsService.saveRecord(record);
 
         return 200;

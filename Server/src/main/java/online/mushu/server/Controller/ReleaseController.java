@@ -74,7 +74,7 @@ public class ReleaseController {
         for (ReleaseInf inf : infs) {
             ReleaseInfVo vo = ReleaseInfVo.builder()
                     .id(inf.getId())
-                    .GoodsID(inf.getGoods().getId())
+                    .goodsID(inf.getGoods().getId())
                     .downLoadTime(inf.getDownLoadTime())
                     .hurryMark(inf.isHurryMark())
                     .topMark(inf.isTopMark())
@@ -93,7 +93,7 @@ public class ReleaseController {
         for (ReleaseInf inf : infs) {
             ReleaseInfVo vo = ReleaseInfVo.builder()
                     .id(inf.getId())
-                    .GoodsID(inf.getGoods().getId())
+                    .goodsID(inf.getGoods().getId())
                     .downLoadTime(inf.getDownLoadTime())
                     .hurryMark(inf.isHurryMark())
                     .topMark(inf.isTopMark())
@@ -112,7 +112,7 @@ public class ReleaseController {
         for (ReleaseInf inf : infs) {
             ReleaseInfVo vo = ReleaseInfVo.builder()
                     .id(inf.getId())
-                    .GoodsID(inf.getGoods().getId())
+                    .goodsID(inf.getGoods().getId())
                     .downLoadTime(inf.getDownLoadTime())
                     .hurryMark(inf.isHurryMark())
                     .topMark(inf.isTopMark())

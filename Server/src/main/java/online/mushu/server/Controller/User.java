@@ -87,8 +87,7 @@ public class User {
 
 //    可行
     @GetMapping("/getUserInf")
-    public UserInfVo getUserInf(@RequestBody UserInfDto dto) {
-        int id = dto.getId();
+    public UserInfVo getUserInf(@RequestParam(name = "id") int id) {
         UserProfile userProfile = userProfileService.getUserProfile(id);
         if (userProfile == null) {
             return UserInfVo.builder()

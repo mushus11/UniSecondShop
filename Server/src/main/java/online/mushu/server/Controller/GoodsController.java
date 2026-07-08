@@ -71,9 +71,8 @@ public class GoodsController {
 //    可行
 //    查找单个商品
     @GetMapping("/getGoodInf")
-    public GetGoodsInfVo getGoodInf(@RequestBody GetGoodsInfDto dto) {
-        String id = dto.getGoodID();
-        Goods good = goodsService.getGoodsByID(id);
+    public GetGoodsInfVo getGoodInf(@RequestParam(name = "goodID") String goodID) {
+        Goods good = goodsService.getGoodsByID(goodID);
         return GetGoodsInfVo.builder()
                 .id(good.getId())
                 .userId(good.getUser().getId())
@@ -89,10 +88,9 @@ public class GoodsController {
 //    可行
 //    查找所有商品
     @GetMapping("/getGoodsInfByUser")
-    public List<GetGoodsInfVo> getGoodsInfByUser(@RequestBody GetGoodsInfDto dto) {
-        int id = dto.getUserID();
+    public List<GetGoodsInfVo> getGoodsInfByUser(@RequestParam(name = "userID") int userID) {
         List<GetGoodsInfVo> goodsInfVos = new ArrayList<>();
-        List<Goods> goods = goodsService.getGoods(id);
+        List<Goods> goods = goodsService.getGoods(userID);
         for (Goods good : goods) {
             GetGoodsInfVo getGoodsInfVo = GetGoodsInfVo.builder()
                     .id(good.getId())
@@ -110,8 +108,7 @@ public class GoodsController {
 
 //    可行
     @GetMapping("/getGoodsInfByType")
-    public List<GetGoodsInfVo> getGoodsInfByType(@RequestBody GetGoodsInfDto dto) {
-        int type = dto.getType();
+    public List<GetGoodsInfVo> getGoodsInfByType(@RequestParam(name = "type") int type) {
         List<GetGoodsInfVo> list = new ArrayList<>();
         List<Goods> goods = goodsService.getGoodsByType(type);
         for (Goods good : goods) {
@@ -131,13 +128,12 @@ public class GoodsController {
 
     @GetMapping("/getGoodsInfIsHarry")
     public List<ReleaseInfVo> getGoodsInfIsHarry() {
-        System.out.println("aaaaaaaaaaaa");
         List<ReleaseInfVo> list = new ArrayList<>();
         List<ReleaseInf> infs = releaseInfService.getHurry();
         for (ReleaseInf inf : infs) {
             ReleaseInfVo vo = ReleaseInfVo.builder()
                     .id(inf.getId())
-                    .GoodsID(inf.getGoods().getId())
+                    .goodsID(inf.getGoods().getId())
                     .downLoadTime(inf.getDownLoadTime())
                     .hurryMark(inf.isHurryMark())
                     .topMark(inf.isTopMark())
@@ -151,13 +147,12 @@ public class GoodsController {
 
     @GetMapping("/getGoodsInfIsTop")
     public List<ReleaseInfVo> getGoodsInfIsTop() {
-        System.out.println("aaaaaaaaaaaa");
         List<ReleaseInfVo> list = new ArrayList<>();
         List<ReleaseInf> infs = releaseInfService.getTop();
         for (ReleaseInf inf : infs) {
             ReleaseInfVo vo = ReleaseInfVo.builder()
                     .id(inf.getId())
-                    .GoodsID(inf.getGoods().getId())
+                    .goodsID(inf.getGoods().getId())
                     .downLoadTime(inf.getDownLoadTime())
                     .hurryMark(inf.isHurryMark())
                     .topMark(inf.isTopMark())

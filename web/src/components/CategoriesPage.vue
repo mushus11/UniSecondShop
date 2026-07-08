@@ -147,9 +147,9 @@ const loadCategoryGoods = async () => {
 
 const handleTopItem = async (item: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', item.id)
-    const res = await api.post('/Release/changeTop', formData)
+    const res = await api.post('/Release/changeTop', null, {
+      params: { ID: item.id }
+    })
     ElMessage.success(res.data === 200 ? '置顶成功' : '操作失败')
     loadTopGoods()
   } catch (e) {
@@ -159,9 +159,9 @@ const handleTopItem = async (item: any) => {
 
 const handleHurryItem = async (item: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', item.id)
-    const res = await api.post('/Release/changeHurry', formData)
+    const res = await api.post('/Release/changeHurry', null, {
+      params: { ID: item.id }
+    })
     ElMessage.success(res.data === 200 ? '急出标记成功' : '操作失败')
     loadHurryGoods()
   } catch (e) {
@@ -186,9 +186,9 @@ const loadTopGoods = async () => {
 
 const handleCancelTop = async (row: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', row.goodId || row.id)
-    await api.post('/Release/changeTop', formData)
+    await api.post('/Release/changeTop', null, {
+      params: { ID: row.goodId || row.id }
+    })
     ElMessage.success('已取消置顶')
     loadTopGoods()
   } catch (e) {}
@@ -211,9 +211,9 @@ const loadHurryGoods = async () => {
 
 const handleCancelHurry = async (row: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', row.goodId || row.id)
-    await api.post('/Release/changeHurry', formData)
+    await api.post('/Release/changeHurry', null, {
+      params: { ID: row.goodId || row.id }
+    })
     ElMessage.success('已取消急出')
     loadHurryGoods()
   } catch (e) {}

@@ -191,7 +191,7 @@ const loadUserInfo = async () => {
     const res = await api.get('/user/getUserInf', {
       params: { id: userIdNum.value }
     })
-    if (res.data) {
+    if (res.data && res.data.code !== 201) {
       userInfo.id = String(res.data.id || loginStore.id)
       userInfo.name = res.data.name || ''
       userInfo.college = res.data.college || ''
@@ -356,9 +356,9 @@ const handleDeletePurchase = async (row: any) => {
     confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
   }).then(async () => {
     try {
-      const formData = new FormData()
-      formData.append('id', row.id)
-      const res = await api.delete('/Purchase/delete', { data: formData })
+      const res = await api.delete('/Purchase/delete', {
+        params: { id: row.id }
+      })
       if (res.data === 200) {
         ElMessage.success('删除成功')
         loadMyPurchases()

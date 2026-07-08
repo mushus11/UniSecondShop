@@ -205,9 +205,9 @@ const handleStateChange = async (row: any, action: 'up' | 'down' | 'out') => {
   const actionMap = { up: 'changeStateUp', down: 'changeStateDown', out: 'changeStateOut' }
   const labelMap = { up: '上架', down: '下架', out: '售出' }
   try {
-    const formData = new FormData()
-    formData.append('ID', row.goodId || row.id)
-    const res = await api.post(`/Release/${actionMap[action]}`, formData)
+    const res = await api.post(`/Release/${actionMap[action]}`, null, {
+      params: { ID: row.goodId || row.id }
+    })
     if (res.data === 200) { ElMessage.success(`${labelMap[action]}成功`); loadData() }
     else { ElMessage.error(`${labelMap[action]}失败`) }
   } catch (e) { console.error('状态变更失败:', e) }
@@ -215,9 +215,9 @@ const handleStateChange = async (row: any, action: 'up' | 'down' | 'out') => {
 
 const handleToggleTop = async (row: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', row.goodId || row.id)
-    const res = await api.post('/Release/changeTop', formData)
+    const res = await api.post('/Release/changeTop', null, {
+      params: { ID: row.goodId || row.id }
+    })
     if (res.data === 200) { ElMessage.success(row.topMark ? '已取消置顶' : '已置顶'); loadData() }
     else { ElMessage.error('操作失败') }
   } catch (e) { console.error('置顶操作失败:', e) }
@@ -225,9 +225,9 @@ const handleToggleTop = async (row: any) => {
 
 const handleToggleHurry = async (row: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', row.goodId || row.id)
-    const res = await api.post('/Release/changeHurry', formData)
+    const res = await api.post('/Release/changeHurry', null, {
+      params: { ID: row.goodId || row.id }
+    })
     if (res.data === 200) { ElMessage.success(row.hurryMark ? '已取消急出' : '已标记急出'); loadData() }
     else { ElMessage.error('操作失败') }
   } catch (e) { console.error('急出操作失败:', e) }
@@ -240,9 +240,9 @@ const handleBatchDown = async () => {
   }).then(async () => {
     for (const row of selectedRows.value) {
       try {
-        const formData = new FormData()
-        formData.append('ID', row.goodId || row.id)
-        await api.post('/Release/changeStateDown', formData)
+        await api.post('/Release/changeStateDown', null, {
+          params: { ID: row.goodId || row.id }
+        })
       } catch (e) {}
     }
     ElMessage.success('批量下架完成')
@@ -270,8 +270,9 @@ const submitPublish = async () => {
     })
     if (res.data && res.data.goodID) {
       if (publishForm.state) {
-        const formData = new FormData(); formData.append('ID', res.data.goodID)
-        await api.post('/Release/changeStateUp', formData)
+        await api.post('/Release/changeStateUp', null, {
+          params: { ID: res.data.goodID }
+        })
       }
       ElMessage.success('发布成功'); dialogVisible.value = false; loadData()
     } else { ElMessage.error('发布失败') }

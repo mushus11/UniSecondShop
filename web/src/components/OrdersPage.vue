@@ -165,9 +165,9 @@ const handleDetail = (row: any) => {
 
 const handleComplete = async (row: any) => {
   try {
-    const formData = new FormData()
-    formData.append('ID', row.id)
-    const res = await api.post('/Records/changeState', formData)
+    const res = await api.post('/Records/changeState', {
+      id: row.id
+    })
     if (res.data === 200) {
       ElMessage.success('交易已完成')
       loadData()
@@ -184,9 +184,9 @@ const handleDelete = (row: any) => {
     confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
   }).then(async () => {
     try {
-      const formData = new FormData()
-      formData.append('ID', row.id)
-      const res = await api.delete('/Records/deleteRecord', { data: formData })
+      const res = await api.delete('/Records/deleteRecord', {
+        params: { ID: row.id }
+      })
       if (res.data === 200) {
         ElMessage.success('删除成功')
         loadData()

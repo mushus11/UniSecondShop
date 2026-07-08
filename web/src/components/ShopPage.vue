@@ -116,8 +116,7 @@ const loadGoods = async () => {
   try {
     const res = await api.get('/goods/getGoodsInfByType', {
       params: {
-        type: activeCategory.value,
-        goodID: ''
+        type: activeCategory.value
       }
     })
     allGoods.value = Array.isArray(res.data) ? res.data : []

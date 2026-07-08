@@ -99,7 +99,10 @@ const hurryGoods = ref<any[]>([])
 const goodsCache = ref<Map<string, any>>(new Map())
 // 获取商品图片url
 const getImageUrl = (goodId: string) => {
-  return `/api/image/getImage/placeholder`
+  if (!goodId) return ''
+  const cached = goodsCache.value.get(goodId)
+  const imageId = cached?.imageId || ''
+  return imageId ? `/api/image/getImage/${imageId}` : ''
 }
 // 获取商品名称
 const getGoodName = (goodId: string) => {
@@ -118,8 +121,8 @@ const loadTopGoods = async () => {
     if (Array.isArray(res.data)) {
       topGoods.value = res.data
       for (const item of res.data) {
-        if (item.goodId && !goodsCache.value.has(item.goodId)) {
-          await fetchGoodDetail(item.goodId)
+        if (item.goodsID && !goodsCache.value.has(item.goodsID)) {
+          await fetchGoodDetail(item.goodsID)
         }
       }
     }
@@ -151,11 +154,11 @@ const loadHurryGoods = async () => {
 // 获取商品详情
 
 const fetchGoodDetail = async (goodId: string) => {
-  // 空商品ID直接拦截，杜绝空参数请求
   if (!goodId?.trim()) return
   try {
-    // 不传任何 params，仅依靠请求头Authorization鉴权
-    const res = await api.get('/goods/getGoodInf')
+    const res = await api.get('/goods/getGoodInf', {
+      params: { goodID: goodId }
+    })
     if (res.data) {
       goodsCache.value.set(goodId, res.data)
     }

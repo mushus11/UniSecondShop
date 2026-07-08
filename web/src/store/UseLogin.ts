@@ -42,7 +42,7 @@ export const useLoginStore = defineStore('login', {
                 console.log('登录响应:', res.data)
 
                 if (res.data.code === 200) {
-                    this.jwt = res.data.jwt
+                    this.jwt = res.data.JWT || res.data.jwt || ''
                     this.username = res.data.username || ''
                     this.access = res.data.access || 0
                     this.btnText = '登录'
